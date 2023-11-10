@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Scanner;
 
 class Quadtree{
 
@@ -9,7 +10,28 @@ class Quadtree{
     private Quadtree Q4;
 
     public Quadtree(String chemin){
-        File file = new file (chemin);
+        try{
+            Scanner scanner = new Scanner(new File(chemin));
+            scanner.nextLine();
+            scanner.nextLine();
+            int dim = Integer.parseInt(scanner.next());
+            System.out.println(dim);
+            scanner.nextLine();
+            int lumMax= Integer.parseInt(scanner.next());
+            System.out.println(lumMax);
+            int[][] tabQ = new int[dim][dim];
+            for(int i = 0; i < dim; i++){
+                for(int j = 0; j < dim; j++){
+                    tabQ[i][j] = Integer.parseInt(scanner.next());
+                }
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        
+/*      File file = new file (chemin);
         FileReader fr = new FileReader(file);
         BufferedReader bf = new BufferedReader(fr);
         StringBuffer = new StringBuffer();
@@ -19,7 +41,7 @@ class Quadtree{
         }
         br.readLine();
         br.readLine();
-        
+*/   
     }
 
     public Quadtree getQ1(){
@@ -46,14 +68,14 @@ class Quadtree{
         return this.value = v;
     }
 
-    public void toString(){
+    public void QtoString(){
         if (this != null){
             System.out.print("(");
-            this.getQ1().toString();
-            this.getQ2().toString();
+            this.getQ1().QtoString();
+            this.getQ2().QtoString();
             System.out.print(this.getValue());
-            this.getQ3().toString();
-            this.getQ4().toString();
+            this.getQ3().QtoString();
+            this.getQ4().QtoString();
             System.out.print(")");
         }
     }
@@ -79,5 +101,8 @@ class Quadtree{
 
         }
         
+    }
+    public static void main(String[] args){
+
     }
 }
