@@ -3,11 +3,19 @@ import java.util.Scanner;
 
 class Quadtree{
 
-    private int value; 
-    private Quadtree Q1;
-    private Quadtree Q2;
-    private Quadtree Q3;
-    private Quadtree Q4;
+    public int value; 
+    public Quadtree Q1;
+    public Quadtree Q2;
+    public Quadtree Q3;
+    public Quadtree Q4;
+
+    public Quadtree( int v,Quadtree q1, Quadtree q2,Quadtree q3, Quadtree q4){
+        this.value = v;
+        this.Q1 =q1;
+        this.Q2 =q2;
+        this.Q3 =q3;
+        this.Q4 =q4;
+    }
 
     public Quadtree(String chemin){
         try{
@@ -25,23 +33,46 @@ class Quadtree{
                     tabQ[i][j] = Integer.parseInt(scanner.next());
                 }
             }
+            int hmax = (int)(Math.log(dim) / Math.log(2));
+            System.out.println(hmax);
+
+            Quadtree Q = new Quadtree(-1, null, null, null, null);
+            this.creerQuad(Q, tabQ);
+
             scanner.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
 
-        
-/*      File file = new file (chemin);
-        FileReader fr = new FileReader(file);
-        BufferedReader bf = new BufferedReader(fr);
-        StringBuffer = new StringBuffer();
-        String line = br.readLine();
-        if(line != "P2"){
-            throw new IllegalArgumentException("Erreur ! L'image n'est pas au format P2");
+    Quadtree creerQuad(Quadtree Q, int[][] tabVal){
+        if(tabVal.length == 2){
+            System.out.print("oui");
+            Quadtree q1 = new Quadtree(tabVal[0][0],null, null, null, null);
+            Quadtree q2 = new Quadtree(tabVal[0][1],null, null, null, null);
+            Quadtree q3 = new Quadtree(tabVal[1][1],null, null, null, null);
+            Quadtree q4 = new Quadtree(tabVal[1][0],null, null, null, null);
+            Quadtree q = new Quadtree(-1,q1,q2, q3, q4);
+
+            return q;
+        }else{
+            int tailleSousTableau = tabVal.length / 2;
+            int[][] sousTableau1 = new int[tailleSousTableau][tailleSousTableau];
+            int[][] sousTableau2 = new int[tailleSousTableau][tailleSousTableau];
+            int[][] sousTableau3 = new int[tailleSousTableau][tailleSousTableau];
+            int[][] sousTableau4 = new int[tailleSousTableau][tailleSousTableau];
+
+            for (int i = 0; i < tailleSousTableau; i++) {
+                for (int j = 0; j < tailleSousTableau; j++) {
+                    sousTableau1[i][j] = tabVal[i][j];
+                    sousTableau2[i][j] = tabVal[i][j + tailleSousTableau];
+                    sousTableau3[i][j] = tabVal[i + tailleSousTableau][j];
+                    sousTableau4[i][j] = tabVal[i + tailleSousTableau][j + tailleSousTableau];
+                }
+            }
+            Quadtree Q0 = new Quadtree(-1,creerQuad(Q1, sousTableau1),creerQuad(Q1, sousTableau2), creerQuad(Q3, sousTableau3), creerQuad(Q4, sousTableau4));
+            return Q0;
         }
-        br.readLine();
-        br.readLine();
-*/   
     }
 
     public Quadtree getQ1(){
@@ -71,11 +102,19 @@ class Quadtree{
     public void QtoString(){
         if (this != null){
             System.out.print("(");
-            this.getQ1().QtoString();
-            this.getQ2().QtoString();
+            if(this.getQ1() != null){
+                this.getQ1().QtoString();
+            }
+            if(this.getQ2() != null){
+                this.getQ2().QtoString();
+            }
             System.out.print(this.getValue());
-            this.getQ3().QtoString();
-            this.getQ4().QtoString();
+            if(this.getQ3() != null){
+                this.getQ3().QtoString();
+            }
+            if(this.getQ4() != null){
+                this.getQ4().QtoString();
+            }
             System.out.print(")");
         }
     }
@@ -103,6 +142,7 @@ class Quadtree{
         
     }
     public static void main(String[] args){
-
+        Quadtree Q = new Quadtree("test.pgm");
+        Q.QtoString();
     }
 }
