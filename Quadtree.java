@@ -16,6 +16,13 @@ class Quadtree{
         this.Q3 =q3;
         this.Q4 =q4;
     }
+    public Quadtree(){
+        this.value = -1;
+        this.Q1 =null;
+        this.Q2 =null;
+        this.Q3 =null;
+        this.Q4 =null;
+    }
 
     public Quadtree(String chemin){
         try{
@@ -47,7 +54,7 @@ class Quadtree{
 
     Quadtree creerQuad(Quadtree Q, int[][] tabVal){
         if(tabVal.length == 2){
-            System.out.print("oui");
+
             Quadtree q1 = new Quadtree(tabVal[0][0],null, null, null, null);
             Quadtree q2 = new Quadtree(tabVal[0][1],null, null, null, null);
             Quadtree q3 = new Quadtree(tabVal[1][1],null, null, null, null);
@@ -70,7 +77,8 @@ class Quadtree{
                     sousTableau4[i][j] = tabVal[i + tailleSousTableau][j + tailleSousTableau];
                 }
             }
-            Quadtree Q0 = new Quadtree(-1,creerQuad(Q1, sousTableau1),creerQuad(Q1, sousTableau2), creerQuad(Q3, sousTableau3), creerQuad(Q4, sousTableau4));
+            
+            Quadtree Q0 = new Quadtree(-1,creerQuad(new Quadtree(), sousTableau1),creerQuad(new Quadtree(), sousTableau2), creerQuad(new Quadtree(), sousTableau3), creerQuad(new Quadtree(), sousTableau4));
             return Q0;
         }
     }
@@ -104,6 +112,8 @@ class Quadtree{
             System.out.print("(");
             if(this.getQ1() != null){
                 this.getQ1().QtoString();
+            }else{
+
             }
             if(this.getQ2() != null){
                 this.getQ2().QtoString();
@@ -143,6 +153,14 @@ class Quadtree{
     }
     public static void main(String[] args){
         Quadtree Q = new Quadtree("test.pgm");
+        /* 
+        Quadtree Q1 = new Quadtree(1,null,null,null,null);
+        Quadtree Q2 = new Quadtree(2,null,null,null,null);
+        Quadtree Q3 = new Quadtree(3,null,null,null,null);
+        Quadtree Q4 = new Quadtree(4,null,null,null,null);
+        Quadtree Q0 = new Quadtree(0, Q1, Q2, Q3, Q4);
+        Q0.QtoString();
+        */
         Q.QtoString();
     }
 }
