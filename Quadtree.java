@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 class Quadtree {
 
-    public long value;
+    public int value;
     public Quadtree Q1;
     public Quadtree Q2;
     public Quadtree Q3;
@@ -141,11 +141,11 @@ class Quadtree {
         return this.Q4;
     }
 
-    public long getValue() {
+    public int getValue() {
         return this.value;
     }
 
-    public long setValue(int v) {
+    public int setValue(int v) {
         return this.value = v;
     }
 
@@ -165,7 +165,7 @@ class Quadtree {
         }
     }
 
-    public long lumMax(){
+    public int lumMax(){
         if(this.getQ1() == null
         &&this.getQ2() == null
         &&this.getQ3() == null
@@ -173,10 +173,10 @@ class Quadtree {
             return this.value;
         }
         else{
-            long maxQ1 = this.getQ1().lumMax();
-            long maxQ2 = this.getQ2().lumMax();
-            long maxQ3 = this.getQ3().lumMax();
-            long maxQ4 = this.getQ4().lumMax();
+            int maxQ1 = this.getQ1().lumMax();
+            int maxQ2 = this.getQ2().lumMax();
+            int maxQ3 = this.getQ3().lumMax();
+            int maxQ4 = this.getQ4().lumMax();
             return Math.max(Math.max(maxQ1,maxQ2),Math.max(maxQ3,maxQ4));
         }
     }
@@ -191,7 +191,9 @@ class Quadtree {
             int dim = (int)Math.pow(2,this.hauteurMax());
             writer.write(dim + " " + dim);
             writer.newLine();
-            writer.write((int)this.lumMax());
+            int lum = this.lumMax();
+            writer.write(lum);
+            writer.newLine();
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -202,7 +204,7 @@ class Quadtree {
         &&this.getQ2().value != -1
         &&this.getQ3().value != -1
         &&this.getQ4().value != -1){
-            this.value = Math.round(Math.exp(0.25*(Math.log(0.1+this.getQ1().value) + Math.log(0.1+this.getQ2().value)
+            this.value = (int)Math.round(Math.exp(0.25*(Math.log(0.1+this.getQ1().value) + Math.log(0.1+this.getQ2().value)
              + Math.log(0.1+this.getQ3().value) + Math.log(0.1+this.getQ4().value))));
             this.Q1=null;
             this.Q2=null;
@@ -268,13 +270,14 @@ class Quadtree {
         System.out.println(Q.hauteurMax());
         System.out.print("Luminosité maximum d'un pixel de larbre : ");
         System.out.println(Q.lumMax());
-        Q.compressLambda();
-        Q.verifEqui();
-        System.out.println("\nCompression Lambda : ");
+        //Q.compressLambda();
+        //Q.verifEqui();
+        //System.out.println("\nCompression Lambda : ");
         Q.QtoString();
         System.out.print("\nHauteur de larbre : ");
         System.out.println(Q.hauteurMax());
         System.out.print("Luminosité maximum d'un pixel de l'arbre : ");
         System.out.println(Q.lumMax());
+        Q.toPGM();
     }
 }
