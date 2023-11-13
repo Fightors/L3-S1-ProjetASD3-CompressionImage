@@ -192,7 +192,7 @@ class Quadtree {
             writer.write(dim + " " + dim);
             writer.newLine();
             int lum = this.lumMax();
-            writer.write(lum);
+            writer.write(String.valueOf(lum));
             writer.newLine();
         }catch (IOException e) {
             e.printStackTrace();
