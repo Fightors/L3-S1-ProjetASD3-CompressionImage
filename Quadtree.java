@@ -112,13 +112,13 @@ class Quadtree {
         else{
             if(this.getQ1().value == -1){
                 this.Q1.verifEqui();
-            }
+            } 
             if(this.getQ2().value == -1){
                 this.Q2.verifEqui();
-            }
+            } 
             if(this.getQ3().value == -1){
                 this.Q3.verifEqui();
-            }
+            } 
             if(this.getQ4().value == -1){
                 this.Q4.verifEqui();
             }
@@ -182,24 +182,29 @@ class Quadtree {
     }
 
     public int[][] treeToTab0(int h){
-        if(this.getQ1().value() != -1
-        &&this.getQ2().value() != -1
-        &&this.getQ3().value() != -1
-        &&this.getQ4().value() != -1){
-            int[][] tab = new int[1][1];
-            tab[0][0] = this.Q1.getValue();
-            tab[0][1] = this.Q2.getValue();
-            tab[1][1] = this.Q3.getValue();
-            tab[1][0] = this.Q4.getValue();
+        if(this.getQ1().getValue() != -1
+        &&this.getQ2().getValue() != -1
+        &&this.getQ3().getValue() != -1
+        &&this.getQ4().getValue() != -1){
+            int[][] tab = new int[2][2];
+            tab[0][0] = this.getQ1().getValue();
+            tab[0][1] = this.getQ2().getValue();
+            tab[1][1] = this.getQ3().getValue();
+            tab[1][0] = this.getQ4().getValue();
             return tab;
+        }
         else{
-            int[][] tabQ1;
-            int[][] tabQ2;
-            int[][] tabQ3;
-            int[][] tabQ4;
-            if(this.getQ1().value() != -1){
-                int hQ1 = h+1;
-                tabQ1 = treeToTab(hQ1);
+            int[][] tabQ1 = new int[2][2];
+            int[][] tabQ2 = new int[2][2];
+            int[][] tabQ3 = new int[2][2];
+            int[][] tabQ4 = new int[2][2];
+            int hQ1 = 1;
+            int hQ2 = 1;
+            int hQ3 = 1;
+            int hQ4 = 1;
+            if(this.getQ1().getValue() == -1){
+                hQ1 = h+1;
+                tabQ1 = this.getQ1().treeToTab0(hQ1);
             }
             else{
                 tabQ1[0][0] = this.Q1.getValue();
@@ -207,58 +212,106 @@ class Quadtree {
                 tabQ1[1][1] = this.Q1.getValue();
                 tabQ1[1][0] = this.Q1.getValue();
             }
-            if(this.getQ2().value() != -1){
-                int hQ2 = h+1;
-                tabQ1 = treeToTab(hQ2);
+            if(this.getQ2().getValue() == -1){
+                hQ2 = h+1;
+                tabQ2 = this.getQ2().treeToTab0(hQ2);
             }
             else{
-                tabQ1[0][0] = this.Q2.getValue();
-                tabQ1[0][1] = this.Q2.getValue();
-                tabQ1[1][1] = this.Q2.getValue();
-                tabQ1[1][0] = this.Q2.getValue();
+                tabQ2[0][0] = this.Q2.getValue();
+                tabQ2[0][1] = this.Q2.getValue();
+                tabQ2[1][1] = this.Q2.getValue();
+                tabQ2[1][0] = this.Q2.getValue();
             }
-            if(this.getQ3().value() != -1){
-                int hQ3 = h+1;
-                tabQ1 = treeToTab(hQ3);
-            }
-            else{
-                tabQ1[0][0] = this.Q3.getValue();
-                tabQ1[0][1] = this.Q3.getValue();
-                tabQ1[1][1] = this.Q3.getValue();
-                tabQ1[1][0] = this.Q3.getValue();
-            }
-            if(this.getQ4().value() != -1){
-                int hQ4 = h+1;
-                tabQ1 = treeToTab(hQ4);
+            if(this.getQ3().getValue() == -1){
+                hQ3 = h+1;
+                tabQ3 = this.getQ3().treeToTab0(hQ3);
             }
             else{
-                tabQ1[0][0] = this.Q4.getValue();
-                tabQ1[0][1] = this.Q4.getValue();
-                tabQ1[1][1] = this.Q4.getValue();
-                tabQ1[1][0] = this.Q4.getValue();
+                tabQ3[0][0] = this.Q3.getValue();
+                tabQ3[0][1] = this.Q3.getValue();
+                tabQ3[1][1] = this.Q3.getValue();
+                tabQ3[1][0] = this.Q3.getValue();
             }
-            if(h1 == h2 && h2 == h3 && h3 == h4){
-                //Fusion des 4 tableaux
+            if(this.getQ4().getValue() == -1){
+                hQ4 = h+1;
+                tabQ4 = this.getQ4().treeToTab0(hQ4);
             }
             else{
-                int hmax = Math.max(Math.max(h1,h2),Math.max(h3,h4));
-                if(hmax != h1){
-                    //Agrandissement du tableau + remplissage
+                tabQ4[0][0] = this.Q4.getValue();
+                tabQ4[0][1] = this.Q4.getValue();
+                tabQ4[1][1] = this.Q4.getValue();
+                tabQ4[1][0] = this.Q4.getValue();
+            }
+            if(hQ1 == hQ2 && hQ2 == hQ3 && hQ3 == hQ4){
+                int taille = tabQ1.length;
+                int[][] tabFinal = new int[taille*2][taille*2];
+                for(int i = 0; i < taille; i++){
+                    for(int j = 0; j < taille; j++){
+                        tabFinal[i][j]=tabQ1[i][j];
+                        tabFinal[i][j + taille]=tabQ2[i][j];
+                        tabFinal[i + taille ][j + taille]=tabQ4[i][j];
+                        tabFinal[i + taille][j]=tabQ3[i][j];
+                    }
                 }
-                if(hmax != h2){
-                    //Agrandissement du tableau + remplissage
+                return tabFinal;
+            }
+            else{
+                int hmax = Math.max(Math.max(hQ1,hQ2),Math.max(hQ3,hQ4));
+                if(hmax != hQ1){
+                    int taille = (int)Math.pow(2,hmax);
+                    int[][] tabFinal = new int[taille][taille];
+                    int petiteT = tabQ1.length;
+                    for(int i = 0; i < taille; i++){
+                        for(int j = 0; j < taille; j++){
+                            tabFinal[i][j] = tabQ1[i % petiteT][j % petiteT];
+                        }
+                    }
                 }
-                if(hmax != h3){
-                    //Agrandissement du tableau + remplissage
+                if(hmax != hQ2){
+                    int taille = (int)Math.pow(2,hmax);
+                    int[][] tabFinal = new int[taille][taille];
+                    int petiteT = tabQ2.length;
+                    for(int i = 0; i < taille; i++){
+                        for(int j = 0; j < taille; j++){
+                            tabFinal[i][j] = tabQ2[i % petiteT][j % petiteT];
+                        }
+                    }
                 }
-                if(hmax != h4){
-                    //Agrandissement du tableau + remplissage
+                if(hmax != hQ3){
+                    int taille = (int)Math.pow(2,hmax);
+                    int[][] tabFinal = new int[taille][taille];
+                    int petiteT = tabQ3.length;
+                    for(int i = 0; i < taille; i++){
+                        for(int j = 0; j < taille; j++){
+                            tabFinal[i][j] = tabQ3[i % petiteT][j % petiteT];
+                        }
+                    }
                 }
-                //Fusion des 4 tableaux
+                if(hmax != hQ4){
+                    int taille = (int)Math.pow(2,hmax);
+                    int[][] tabFinal = new int[taille][taille];
+                    int petiteT = tabQ4.length;
+                    for(int i = 0; i < taille; i++){
+                        for(int j = 0; j < taille; j++){
+                            tabFinal[i][j] = tabQ4[i % petiteT][j % petiteT];
+                        }
+                    }
+                }
+                int taille = tabQ1.length;
+                int[][] tabFinal = new int[taille*2][taille*2];
+                for(int i = 0; i < taille; i++){
+                    for(int j = 0; j < taille; j++){
+                        tabFinal[i][j]=tabQ1[i][j];
+                        tabFinal[i][j + taille]=tabQ2[i][j];
+                        tabFinal[i + taille ][j + taille]=tabQ4[i][j];
+                        tabFinal[i + taille][j]=tabQ3[i][j];
+                    }
+                }
+                return tabFinal;
             }
         }
     }
-
+/*
     public int[][] treeToTab(int h, int hmax){
         if(h == hmax ){
             int[][] tab = new int[2][2];
@@ -300,7 +353,7 @@ class Quadtree {
             return tab2;
         }
     }
-
+*/
     public void toPGM() {
         String fichier = "dessin.pgm";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fichier))){
@@ -316,10 +369,14 @@ class Quadtree {
             writer.newLine();
             int h = 0;
             int hmax = this.hauteurMax();
-            int[][] tabTree= this.treeToTab(h,hmax);
+            int[][] tabTree= this.treeToTab0(0);
             for(int i= 0;i< dim;i++){
                 for(int j = 0; j<dim;j++){
-                    writer.write(String.valueOf(tabTree[i][j]) + " ");
+                    if(j == dim-1){
+                        writer.write(String.valueOf(tabTree[i][j]) + "\n");
+                    }else{
+                        writer.write(String.valueOf(tabTree[i][j]) + " ");
+                    }
                 }
             }
 
@@ -409,6 +466,6 @@ class Quadtree {
         System.out.print("Luminosité maximum d'un pixel de l'arbre après compression: ");
         System.out.println(Q.lumMax());
         */
-        Q.toPGM();
+        //Q.toPGM();
     }
 }
