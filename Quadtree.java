@@ -181,6 +181,126 @@ class Quadtree {
         }
     }
 
+    public int[][] treeToTab0(int h){
+        if(this.getQ1().value() != -1
+        &&this.getQ2().value() != -1
+        &&this.getQ3().value() != -1
+        &&this.getQ4().value() != -1){
+            int[][] tab = new int[1][1];
+            tab[0][0] = this.Q1.getValue();
+            tab[0][1] = this.Q2.getValue();
+            tab[1][1] = this.Q3.getValue();
+            tab[1][0] = this.Q4.getValue();
+            return tab;
+        else{
+            int[][] tabQ1;
+            int[][] tabQ2;
+            int[][] tabQ3;
+            int[][] tabQ4;
+            if(this.getQ1().value() != -1){
+                int hQ1 = h+1;
+                tabQ1 = treeToTab(hQ1);
+            }
+            else{
+                tabQ1[0][0] = this.Q1.getValue();
+                tabQ1[0][1] = this.Q1.getValue();
+                tabQ1[1][1] = this.Q1.getValue();
+                tabQ1[1][0] = this.Q1.getValue();
+            }
+            if(this.getQ2().value() != -1){
+                int hQ2 = h+1;
+                tabQ1 = treeToTab(hQ2);
+            }
+            else{
+                tabQ1[0][0] = this.Q2.getValue();
+                tabQ1[0][1] = this.Q2.getValue();
+                tabQ1[1][1] = this.Q2.getValue();
+                tabQ1[1][0] = this.Q2.getValue();
+            }
+            if(this.getQ3().value() != -1){
+                int hQ3 = h+1;
+                tabQ1 = treeToTab(hQ3);
+            }
+            else{
+                tabQ1[0][0] = this.Q3.getValue();
+                tabQ1[0][1] = this.Q3.getValue();
+                tabQ1[1][1] = this.Q3.getValue();
+                tabQ1[1][0] = this.Q3.getValue();
+            }
+            if(this.getQ4().value() != -1){
+                int hQ4 = h+1;
+                tabQ1 = treeToTab(hQ4);
+            }
+            else{
+                tabQ1[0][0] = this.Q4.getValue();
+                tabQ1[0][1] = this.Q4.getValue();
+                tabQ1[1][1] = this.Q4.getValue();
+                tabQ1[1][0] = this.Q4.getValue();
+            }
+            if(h1 == h2 && h2 == h3 && h3 == h4){
+                //Fusion des 4 tableaux
+            }
+            else{
+                int hmax = Math.max(Math.max(h1,h2),Math.max(h3,h4));
+                if(hmax != h1){
+                    //Agrandissement du tableau + remplissage
+                }
+                if(hmax != h2){
+                    //Agrandissement du tableau + remplissage
+                }
+                if(hmax != h3){
+                    //Agrandissement du tableau + remplissage
+                }
+                if(hmax != h4){
+                    //Agrandissement du tableau + remplissage
+                }
+                //Fusion des 4 tableaux
+            }
+        }
+    }
+
+    public int[][] treeToTab(int h, int hmax){
+        if(h == hmax ){
+            int[][] tab = new int[2][2];
+            tab[0][0] = this.Q1.getValue();
+            tab[0][1] = this.Q2.getValue();
+            tab[1][1] = this.Q3.getValue();
+            tab[1][0] = this.Q4.getValue();
+            return tab;
+        }else if(this.Q1 == null){
+            int[][] tab1 = new int[this.treeToTab(h+1,hmax).length*2][this.treeToTab(h+1,hmax).length*2];
+            for(int i=0; i < tab1.length; i++){
+                for(int j = 0; j < tab1.length; j++){
+                    tab1[i][j] = this.value;
+                }
+            }
+            return tab1;
+        }else{
+            int[][] tab2  = new int[this.treeToTab(h+1,hmax).length*2][this.treeToTab(h+1,hmax).length*2];
+            for(int i=0; i < tab2.length/2; i++){
+                for(int j = 0; j < tab2.length/2 ; j++){
+                    tab2[i][j] = this.Q1.treeToTab(h+1,hmax)[0][0];
+                }
+            }
+            for(int i=0; i < tab2.length; i++){
+                for(int j = tab2.length/2; j < tab2.length ; j++){
+                    tab2[i][j] = this.Q2.treeToTab(h+1,hmax)[0][1];
+                }
+            }
+            for(int i=tab2.length/2; i < tab2.length; i++){
+                for(int j = tab2.length; j < tab2.length ; j++){
+                    tab2[i][j] = this.Q3.treeToTab(h+1,hmax)[1][1];
+                }
+            }
+            for(int i=tab2.length/2; i < tab2.length; i++){
+                for(int j = 0; j < tab2.length/2 ; j++){
+                    tab2[i][j] = this.Q4.treeToTab(h+1,hmax)[1][0];
+                }
+            }
+            return tab2;
+        }
+    }
+
     public void toPGM() {
         String fichier = "dessin.pgm";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fichier))){
@@ -194,6 +314,15 @@ class Quadtree {
             int lum = this.lumMax();
             writer.write(String.valueOf(lum));
             writer.newLine();
+            int h = 0;
+            int hmax = this.hauteurMax();
+            int[][] tabTree= this.treeToTab(h,hmax);
+            for(int i= 0;i< dim;i++){
+                for(int j = 0; j<dim;j++){
+                    writer.write(String.valueOf(tabTree[i][j]) + " ");
+                }
+            }
+
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -264,20 +393,22 @@ class Quadtree {
     }
 
     public static void main(String[] args) {
-        Quadtree Q = new Quadtree("flower_small.pgm");
+        Quadtree Q = new Quadtree("test.pgm");
         Q.QtoString();
         System.out.print("\nHauteur de larbre : ");
         System.out.println(Q.hauteurMax());
         System.out.print("Luminosité maximum d'un pixel de larbre : ");
         System.out.println(Q.lumMax());
-        //Q.compressLambda();
-        //Q.verifEqui();
-        //System.out.println("\nCompression Lambda : ");
+        /*
+        Q.compressLambda();
+        Q.verifEqui();
+        System.out.println("\nCompression Lambda : ");
         Q.QtoString();
-        System.out.print("\nHauteur de larbre : ");
+        System.out.print("\nHauteur de larbre après compression: ");
         System.out.println(Q.hauteurMax());
-        System.out.print("Luminosité maximum d'un pixel de l'arbre : ");
+        System.out.print("Luminosité maximum d'un pixel de l'arbre après compression: ");
         System.out.println(Q.lumMax());
+        */
         Q.toPGM();
     }
 }
