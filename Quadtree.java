@@ -179,6 +179,21 @@ class Quadtree {
         }
     }
 
+    public int nbNoeuds(){
+        if(this.getQ1().value !=-1
+        &&this.getQ2().value !=-1
+        &&this.getQ3().value !=-1
+        &&this.getQ4().value !=-1){
+            return 4;
+        }
+        else{
+            int nbNoeuds1 = 1+this.getQ1().nbNoeuds();
+            int nbNoeuds2 = 1+this.getQ2().nbNoeuds();
+            int nbNoeuds3 = 1+this.getQ3().nbNoeuds();
+            int nbNoeuds4 = 1+this.getQ4().nbNoeuds();
+            return 1+nbNoeuds1+nbNoeuds2+nbNoeuds3+nbNoeuds4;
+        }
+    }
     public int[][] treeToTab(int h){
         if(this.getQ1().getValue() != -1
         &&this.getQ2().getValue() != -1
@@ -341,7 +356,7 @@ class Quadtree {
         }
     }
 
-    public void compressLambda() {
+    public void compressLambdaRecu() {
         if(this.getQ1().value != -1
         &&this.getQ2().value != -1
         &&this.getQ3().value != -1
@@ -355,18 +370,23 @@ class Quadtree {
         }
         else{
             if(this.getQ1().value == -1){
-                this.Q1.compressLambda();
+                this.Q1.compressLambdaRecu();
             }
             if(this.getQ2().value == -1){
-                this.Q2.compressLambda();
+                this.Q2.compressLambdaRecu();
             }
             if(this.getQ3().value == -1){
-                this.Q3.compressLambda();
+                this.Q3.compressLambdaRecu();
             }
             if(this.getQ4().value == -1){
-                this.Q4.compressLambda();
+                this.Q4.compressLambdaRecu();
             }
         }
+    }
+
+    public void compressLambda(){
+        this.compressLambdaRecu();
+        this.verifEqui();
     }
 
     public void compressRho(int p) {
@@ -374,8 +394,17 @@ class Quadtree {
             System.out.println("Erreur ! Valeur > 100 ou < 0");
         } 
         else{
-
+            int noeudsACons = (int)Math.round((p*this.nbNoeuds())/100);
+            if(noeudsACons % 4  !=1 ){
+                noeudsACons = noeudsACons - (noeudsACons % 4) + 1;
+            }
+            this.compressRhoRecu(noeudsACons);
+            this.verifEqui();
         }
+    }
+
+    public void compressRhoRecu(int nbMax){
+
     }
 
     public void QtoString() {
@@ -406,14 +435,15 @@ class Quadtree {
     }
 
     public static void main(String[] args) {
-        Quadtree Q = new Quadtree("flower_small.pgm");
+        Quadtree Q = new Quadtree("test.pgm");
         Q.QtoString();
-        System.out.print("\nHauteur de larbre : ");
+        System.out.print("\nHauteur de l'arbre : ");
         System.out.println(Q.hauteurMax());
-        System.out.print("Luminosité maximum d'un pixel de larbre : ");
+        System.out.print("Luminosité maximum d'un pixel de l'arbre : ");
         System.out.println(Q.lumMax());
+        System.out.print("Nombre de noeuds de l'arbre : ");
+        System.out.println(Q.nbNoeuds());
         Q.compressLambda();
-        Q.verifEqui();
         System.out.println("\nCompression Lambda : ");
         Q.QtoString();
         System.out.print("\nHauteur de larbre après compression: ");
