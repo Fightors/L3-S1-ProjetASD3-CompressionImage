@@ -398,13 +398,67 @@ class Quadtree {
             if(noeudsACons % 4  !=1 ){
                 noeudsACons = noeudsACons - (noeudsACons % 4) + 1;
             }
-            this.compressRhoRecu(noeudsACons);
+            this.compressRhoRecu(this.nbNoeuds()-noeudsACons);
             this.verifEqui();
         }
     }
 
-    public void compressRhoRecu(int nbMax){
+    public boolean isDeepest(){
+        if(this.getQ1().value != -1
+        &&this.getQ2().value != -1
+        &&this.getQ3().value != -1
+        &&this.getQ4().value != -1){
+            return true;
+    }
 
+    public long epsilon(){
+        long gamma = Math.exp(0.25*(Math.log(0.1+this.getQ1().value) + Math.log(0.1+this.getQ2().value)
+        + Math.log(0.1+this.getQ3().value) + Math.log(0.1+this.getQ4().value)));
+        return Math.max(Math.max(gamma-this.getQ1().value,gamma-this.getQ2().value),
+                        Math.max(gamma-this.getQ3().value,gamma-this.getQ4().value));
+    }
+
+    public void compressRhoRecu(int nbASuppr){
+        if(this.getQ1().isDeepest()
+        &&this.getQ2().isDeepest()
+        &&this.getQ3().isDeepest()
+        &&this.getQ4()isDeepest()){
+            long epsilon1 = this.getQ1().epsilon();
+            long epsilon2 = this.getQ2().epsilon();
+            long epsilon3 = this.getQ3().epsilon();
+            long epsilon4 = this.getQ4().epsilon();
+            long minEps = Math.min(Math.min(epsilon1,epsilon2),Math.min(epsilon3,epsilon4));
+            if(minEps == epsilon1 && nbASuppr > 0){
+                this.getQ1().compressLambda();
+                nbASuppr -= 4;
+            }
+            if(minEps == epsilon2 && nbASuppr > 0){
+                this.getQ2().compressLambda();
+                nbASuppr -= 4;
+            }
+            if(minEps == epsilon3 && nbASuppr > 0){
+                this.getQ3().compressLambda();
+                nbASuppr -= 4;
+            }
+            if(minEps == epsilon4 && nbASuppr > 0){
+                this.getQ4().compressLambda();
+                nbASuppr -= 4;
+            }
+        }
+        else{
+            if(this.getQ1().value == -1){
+                this.Q1.compressRhoRecu(nbASuppr);
+            }
+            if(this.getQ2().value == -1){
+                this.Q2.compressRhoRecu(nbASuppr);
+            }
+            if(this.getQ3().value == -1){
+                this.Q3.compressRhoRecu(nbASuppr);
+            }
+            if(this.getQ4().value == -1){
+                this.Q4.compressRhoRecu(nbASuppr);
+            }
+        }
     }
 
     public void QtoString() {
