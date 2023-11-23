@@ -434,6 +434,13 @@ class Quadtree {
         &&this.getQ4().value != -1;
     }
 
+    public boolean isNotDeepest(){
+        return this.getQ1().value == -1
+        &&this.getQ2().value == -1
+        &&this.getQ3().value == -1
+        &&this.getQ4().value == -1;
+    }
+
     public double epsilon(){
         double gamma = Math.exp(0.25*(Math.log(0.1+this.getQ1().value) + Math.log(0.1+this.getQ2().value)
         + Math.log(0.1+this.getQ3().value) + Math.log(0.1+this.getQ4().value)));
@@ -484,16 +491,16 @@ class Quadtree {
             }
         }
         else{
-            if(this.getQ1().value == -1){
+            if(this.getQ1().isNotDeepest()){
                 this.Q1.compressRhoRecu(nbASuppr);
             }
-            if(this.getQ2().value == -1){
+            if(this.getQ2().isNotDeepest()){
                 this.Q2.compressRhoRecu(nbASuppr);
             }
-            if(this.getQ3().value == -1){
+            if(this.getQ3().isNotDeepest()){
                 this.Q3.compressRhoRecu(nbASuppr);
             }
-            if(this.getQ4().value == -1){
+            if(this.getQ4().isNotDeepest()){
                 this.Q4.compressRhoRecu(nbASuppr);
             }
         }
@@ -528,7 +535,7 @@ class Quadtree {
     }
 
     public static void main(String[] args) {
-        String chemin = "flower_small.pgm";
+        String chemin = "test2.pgm";
         Quadtree QLambda = new Quadtree(chemin);
         Quadtree QRho = new Quadtree(chemin);
         //QLambda.QtoString();
@@ -540,14 +547,14 @@ class Quadtree {
         System.out.println(QLambda.nbNoeuds());
         QLambda.compressLambda();
         System.out.println("\nCompression Lambda : ");
-        //QLambda.QtoString();
+        QLambda.QtoString();
         System.out.print("\nHauteur de l'arbre apres compression Lambda : ");
         System.out.println(QLambda.hauteurMax());
         System.out.print("Luminosite maximum d'un pixel de l'arbre apres compression Lambda : ");
         System.out.println(QLambda.lumMax());
         QRho.compressRho(82);
         System.out.println("\nCompression Rho : ");
-        //QRho.QtoString();
+        QRho.QtoString();
         System.out.print("\nHauteur de l'arbre apres compression Rho : ");
         System.out.println(QRho.hauteurMax());
         System.out.print("Luminosite maximum d'un pixel de l'arbre apres compression Rho : ");
