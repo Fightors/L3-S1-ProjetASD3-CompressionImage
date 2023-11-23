@@ -187,10 +187,34 @@ class Quadtree {
             return 4;
         }
         else{
-            int nbNoeuds1 = 1+this.getQ1().nbNoeuds();
-            int nbNoeuds2 = 1+this.getQ2().nbNoeuds();
-            int nbNoeuds3 = 1+this.getQ3().nbNoeuds();
-            int nbNoeuds4 = 1+this.getQ4().nbNoeuds();
+            int nbNoeuds1 = 0;
+            int nbNoeuds2 = 0;
+            int nbNoeuds3 = 0;
+            int nbNoeuds4 = 0;
+            if(this.getQ1().value==-1){
+                nbNoeuds1 = 1+this.getQ1().nbNoeuds();
+            }
+            else{
+                nbNoeuds1 = 1;
+            }
+            if(this.getQ2().value==-1){
+                nbNoeuds2 = 1+this.getQ2().nbNoeuds();
+            }
+            else{
+                nbNoeuds2 = 1;
+            }
+            if(this.getQ3().value==-1){
+                nbNoeuds3 = 1+this.getQ3().nbNoeuds();
+            }
+            else{
+                nbNoeuds3 = 1;
+            }
+            if(this.getQ4().value==-1){
+                nbNoeuds4 = 1+this.getQ4().nbNoeuds();
+            }
+            else{
+                nbNoeuds4 = 1;
+            }
             return 1+nbNoeuds1+nbNoeuds2+nbNoeuds3+nbNoeuds4;
         }
     }
@@ -325,8 +349,8 @@ class Quadtree {
         }
     }
 
-    public void toPGM() {
-        String fichier = "dessin.pgm";
+    public void toPGM(String nomfichier) {
+        String fichier = nomfichier+".pgm";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fichier))){
             writer.write("P2");
             writer.newLine();
@@ -338,12 +362,10 @@ class Quadtree {
             int lum = this.lumMax();
             writer.write(String.valueOf(lum));
             writer.newLine();
-            //int h = 0;
-            //int hmax = this.hauteurMax();
             int[][] tabTree= this.treeToTab(0);
             for(int i= 0;i< dim;i++){
                 for(int j = 0; j<dim;j++){
-                    if((dim*i+j)%17 == 0){
+                    if((dim*i+j)%17 == 0 && j > 10){
                         writer.write(String.valueOf(tabTree[i][j]) + "\n");
                     }else{
                         writer.write(String.valueOf(tabTree[i][j]) + " ");
@@ -389,60 +411,76 @@ class Quadtree {
         this.verifEqui();
     }
 
+    
     public void compressRho(int p) {
+        int nbN = this.nbNoeuds();
         if (p < 0 || p > 100) {
             System.out.println("Erreur ! Valeur > 100 ou < 0");
         } 
         else{
-            int noeudsACons = (int)Math.round((p*this.nbNoeuds())/100);
+            int noeudsACons = (int)Math.round((p*nbN)/100);
             if(noeudsACons % 4  !=1 ){
                 noeudsACons = noeudsACons - (noeudsACons % 4) + 1;
             }
-            this.compressRhoRecu(this.nbNoeuds()-noeudsACons);
+            this.compressRhoRecu(nbN-noeudsACons);
             this.verifEqui();
         }
     }
 
     public boolean isDeepest(){
-        if(this.getQ1().value != -1
+        return this.getQ1().value != -1
         &&this.getQ2().value != -1
         &&this.getQ3().value != -1
-        &&this.getQ4().value != -1){
-            return true;
+        &&this.getQ4().value != -1;
     }
 
-    public long epsilon(){
-        long gamma = Math.exp(0.25*(Math.log(0.1+this.getQ1().value) + Math.log(0.1+this.getQ2().value)
+    public double epsilon(){
+        double gamma = Math.exp(0.25*(Math.log(0.1+this.getQ1().value) + Math.log(0.1+this.getQ2().value)
         + Math.log(0.1+this.getQ3().value) + Math.log(0.1+this.getQ4().value)));
-        return Math.max(Math.max(gamma-this.getQ1().value,gamma-this.getQ2().value),
-                        Math.max(gamma-this.getQ3().value,gamma-this.getQ4().value));
+        double G1 = Math.abs(gamma-this.getQ1().value);
+        double G2 = Math.abs(gamma-this.getQ2().value);
+        double G3 = Math.abs(gamma-this.getQ3().value);
+        double G4 = Math.abs(gamma-this.getQ4().value);
+        return Math.max(Math.max(G1,G2),Math.max(G3,G4));
     }
 
     public void compressRhoRecu(int nbASuppr){
         if(this.getQ1().isDeepest()
         &&this.getQ2().isDeepest()
         &&this.getQ3().isDeepest()
-        &&this.getQ4()isDeepest()){
-            long epsilon1 = this.getQ1().epsilon();
-            long epsilon2 = this.getQ2().epsilon();
-            long epsilon3 = this.getQ3().epsilon();
-            long epsilon4 = this.getQ4().epsilon();
-            long minEps = Math.min(Math.min(epsilon1,epsilon2),Math.min(epsilon3,epsilon4));
-            if(minEps == epsilon1 && nbASuppr > 0){
-                this.getQ1().compressLambda();
-                nbASuppr -= 4;
-            }
-            if(minEps == epsilon2 && nbASuppr > 0){
-                this.getQ2().compressLambda();
-                nbASuppr -= 4;
-            }
-            if(minEps == epsilon3 && nbASuppr > 0){
-                this.getQ3().compressLambda();
-                nbASuppr -= 4;
-            }
-            if(minEps == epsilon4 && nbASuppr > 0){
-                this.getQ4().compressLambda();
-                nbASuppr -= 4;
+        &&this.getQ4().isDeepest()){
+            if(nbASuppr > 0){
+                double epsilon1 = this.getQ1().epsilon();
+                double epsilon2 = this.getQ2().epsilon();
+                double epsilon3 = this.getQ3().epsilon();
+                double epsilon4 = this.getQ4().epsilon();
+                double minEps = Math.min(Math.min(epsilon1,epsilon2),Math.min(epsilon3,epsilon4));
+                for(int i=0;i<4;i++){
+                    if(minEps == epsilon1 && nbASuppr > 0){
+                        this.getQ1().compressLambdaRecu();
+                        nbASuppr -= 4;
+                        epsilon1=99999.99;
+                        minEps = Math.min(Math.min(epsilon2,epsilon3),epsilon4);
+                    }
+                    if(minEps == epsilon2 && nbASuppr > 0){
+                        this.getQ2().compressLambdaRecu();
+                        nbASuppr -= 4;
+                        epsilon2=99999.99;
+                        minEps = Math.min(Math.min(epsilon1,epsilon3),epsilon4);
+                    }
+                    if(minEps == epsilon3 && nbASuppr > 0){
+                        this.getQ3().compressLambdaRecu();
+                        nbASuppr -= 4;
+                        epsilon3=99999.99;
+                        minEps = Math.min(Math.min(epsilon1,epsilon2),epsilon4);
+                    }
+                    if(minEps == epsilon4 && nbASuppr > 0){
+                        this.getQ4().compressLambdaRecu();
+                        nbASuppr -= 4;
+                        epsilon4=99999.99;
+                        minEps = Math.min(Math.min(epsilon1,epsilon2),epsilon3);
+                    }
+                }
             }
         }
         else{
@@ -460,6 +498,7 @@ class Quadtree {
             }
         }
     }
+
 
     public void QtoString() {
         if (this != null) {
@@ -489,21 +528,31 @@ class Quadtree {
     }
 
     public static void main(String[] args) {
-        Quadtree Q = new Quadtree("test.pgm");
-        Q.QtoString();
+        String chemin = "flower_small.pgm";
+        Quadtree QLambda = new Quadtree(chemin);
+        Quadtree QRho = new Quadtree(chemin);
+        //QLambda.QtoString();
         System.out.print("\nHauteur de l'arbre : ");
-        System.out.println(Q.hauteurMax());
-        System.out.print("Luminosité maximum d'un pixel de l'arbre : ");
-        System.out.println(Q.lumMax());
+        System.out.println(QLambda.hauteurMax());
+        System.out.print("Luminosite maximum d'un pixel de l'arbre : ");
+        System.out.println(QLambda.lumMax());
         System.out.print("Nombre de noeuds de l'arbre : ");
-        System.out.println(Q.nbNoeuds());
-        Q.compressLambda();
+        System.out.println(QLambda.nbNoeuds());
+        QLambda.compressLambda();
         System.out.println("\nCompression Lambda : ");
-        Q.QtoString();
-        System.out.print("\nHauteur de larbre après compression: ");
-        System.out.println(Q.hauteurMax());
-        System.out.print("Luminosité maximum d'un pixel de l'arbre après compression: ");
-        System.out.println(Q.lumMax());
-        Q.toPGM();
+        //QLambda.QtoString();
+        System.out.print("\nHauteur de l'arbre apres compression Lambda : ");
+        System.out.println(QLambda.hauteurMax());
+        System.out.print("Luminosite maximum d'un pixel de l'arbre apres compression Lambda : ");
+        System.out.println(QLambda.lumMax());
+        QRho.compressRho(82);
+        System.out.println("\nCompression Rho : ");
+        //QRho.QtoString();
+        System.out.print("\nHauteur de l'arbre apres compression Rho : ");
+        System.out.println(QRho.hauteurMax());
+        System.out.print("Luminosite maximum d'un pixel de l'arbre apres compression Rho : ");
+        System.out.println(QRho.lumMax());
+        QLambda.toPGM("compressionLambda");
+        QRho.toPGM("compressionRho");
     }
 }
