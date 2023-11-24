@@ -31,10 +31,10 @@ class Quadtree {
             scanner.nextLine();
             scanner.nextLine();
             int dim = Integer.parseInt(scanner.next());
-            System.out.println(dim);
+            //System.out.println(dim);
             scanner.nextLine();
             int lumMax = Integer.parseInt(scanner.next());
-            System.out.println(lumMax);
+            //System.out.println(lumMax);
             int[][] tabQ = new int[dim][dim];
             for (int i = 0; i < dim; i++) {
                 for (int j = 0; j < dim; j++) {
@@ -42,7 +42,7 @@ class Quadtree {
                 }
             }
             int hmax = (int) (Math.log(dim) / Math.log(2));
-            System.out.println(hmax);
+            //System.out.println(hmax);
 
             this.value = -1;
             this.Q1 = null;
@@ -429,9 +429,9 @@ class Quadtree {
 
     public boolean isDeepest(){
         return this.getQ1().value != -1
-        &&this.getQ2().value != -1
-        &&this.getQ3().value != -1
-        &&this.getQ4().value != -1;
+        ||this.getQ2().value != -1
+        ||this.getQ3().value != -1
+        ||this.getQ4().value != -1;
     }
 
     public boolean isNotDeepest(){
@@ -452,10 +452,11 @@ class Quadtree {
     }
 
     public void compressRhoRecu(int nbASuppr){
-        if(this.getQ1().isDeepest()
-        &&this.getQ2().isDeepest()
-        &&this.getQ3().isDeepest()
-        &&this.getQ4().isDeepest()){
+        System.out.println(nbASuppr);
+        if(!this.getQ1().isDeepest()
+        ||!this.getQ2().isDeepest()
+        ||!this.getQ3().isDeepest()
+        ||!this.getQ4().isDeepest()){
             if(nbASuppr > 0){
                 double epsilon1 = this.getQ1().epsilon();
                 double epsilon2 = this.getQ2().epsilon();
@@ -464,25 +465,45 @@ class Quadtree {
                 double minEps = Math.min(Math.min(epsilon1,epsilon2),Math.min(epsilon3,epsilon4));
                 for(int i=0;i<4;i++){
                     if(minEps == epsilon1 && nbASuppr > 0){
-                        this.getQ1().compressLambdaRecu();
+                        this.getQ1().value = (int)Math.round(Math.exp(0.25*(Math.log(0.1+this.getQ1().getQ1().value) + Math.log(0.1+this.getQ1().getQ2().value)
+                        + Math.log(0.1+this.getQ1().getQ3().value) + Math.log(0.1+this.getQ1().getQ4().value))));
+                        this.getQ1().Q1=null;
+                        this.getQ1().Q2=null;
+                        this.getQ1().Q3=null;
+                        this.getQ1().Q4=null;
                         nbASuppr -= 4;
                         epsilon1=99999.99;
                         minEps = Math.min(Math.min(epsilon2,epsilon3),epsilon4);
                     }
                     if(minEps == epsilon2 && nbASuppr > 0){
-                        this.getQ2().compressLambdaRecu();
+                        this.getQ2().value = (int)Math.round(Math.exp(0.25*(Math.log(0.1+this.getQ2().getQ1().value) + Math.log(0.1+this.getQ2().getQ2().value)
+                        + Math.log(0.1+this.getQ2().getQ3().value) + Math.log(0.1+this.getQ2().getQ4().value))));
+                        this.getQ2().Q1=null;
+                        this.getQ2().Q2=null;
+                        this.getQ2().Q3=null;
+                        this.getQ2().Q4=null;
                         nbASuppr -= 4;
                         epsilon2=99999.99;
                         minEps = Math.min(Math.min(epsilon1,epsilon3),epsilon4);
                     }
                     if(minEps == epsilon3 && nbASuppr > 0){
-                        this.getQ3().compressLambdaRecu();
+                        this.getQ3().value = (int)Math.round(Math.exp(0.25*(Math.log(0.1+this.getQ3().getQ1().value) + Math.log(0.1+this.getQ3().getQ2().value)
+                        + Math.log(0.1+this.getQ3().getQ3().value) + Math.log(0.1+this.getQ3().getQ4().value))));
+                        this.getQ3().Q1=null;
+                        this.getQ3().Q2=null;
+                        this.getQ3().Q3=null;
+                        this.getQ3().Q4=null;
                         nbASuppr -= 4;
                         epsilon3=99999.99;
                         minEps = Math.min(Math.min(epsilon1,epsilon2),epsilon4);
                     }
                     if(minEps == epsilon4 && nbASuppr > 0){
-                        this.getQ4().compressLambdaRecu();
+                        this.getQ4().value = (int)Math.round(Math.exp(0.25*(Math.log(0.1+this.getQ4().getQ1().value) + Math.log(0.1+this.getQ4().getQ2().value)
+                        + Math.log(0.1+this.getQ4().getQ3().value) + Math.log(0.1+this.getQ4().getQ4().value))));
+                        this.getQ4().Q1=null;
+                        this.getQ4().Q2=null;
+                        this.getQ4().Q3=null;
+                        this.getQ4().Q4=null;
                         nbASuppr -= 4;
                         epsilon4=99999.99;
                         minEps = Math.min(Math.min(epsilon1,epsilon2),epsilon3);
@@ -491,16 +512,16 @@ class Quadtree {
             }
         }
         else{
-            if(this.getQ1().isNotDeepest()){
+            if(!this.getQ1().isDeepest()){
                 this.Q1.compressRhoRecu(nbASuppr);
             }
-            if(this.getQ2().isNotDeepest()){
+            if(!this.getQ2().isDeepest()){
                 this.Q2.compressRhoRecu(nbASuppr);
             }
-            if(this.getQ3().isNotDeepest()){
+            if(!this.getQ3().isDeepest()){
                 this.Q3.compressRhoRecu(nbASuppr);
             }
-            if(this.getQ4().isNotDeepest()){
+            if(!this.getQ4().isDeepest()){
                 this.Q4.compressRhoRecu(nbASuppr);
             }
         }
@@ -535,7 +556,16 @@ class Quadtree {
     }
 
     public static void main(String[] args) {
-        String chemin = "test2.pgm";
+        String chemin;
+        int p;
+        if(args.length == 2){
+            chemin = args[0];
+            p = Integer.parseInt(args[1]);
+        }
+        else{
+            chemin = "test.pgm";
+            p = 82;
+        }
         Quadtree QLambda = new Quadtree(chemin);
         Quadtree QRho = new Quadtree(chemin);
         //QLambda.QtoString();
@@ -547,12 +577,12 @@ class Quadtree {
         System.out.println(QLambda.nbNoeuds());
         QLambda.compressLambda();
         System.out.println("\nCompression Lambda : ");
-        QLambda.QtoString();
+        //QLambda.QtoString();
         System.out.print("\nHauteur de l'arbre apres compression Lambda : ");
         System.out.println(QLambda.hauteurMax());
         System.out.print("Luminosite maximum d'un pixel de l'arbre apres compression Lambda : ");
         System.out.println(QLambda.lumMax());
-        QRho.compressRho(82);
+        QRho.compressRho(p);
         System.out.println("\nCompression Rho : ");
         QRho.QtoString();
         System.out.print("\nHauteur de l'arbre apres compression Rho : ");
