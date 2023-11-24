@@ -429,16 +429,16 @@ class Quadtree {
 
     public boolean isDeepest(){
         return this.getQ1().value != -1
-        ||this.getQ2().value != -1
-        ||this.getQ3().value != -1
-        ||this.getQ4().value != -1;
+        &&this.getQ2().value != -1
+        &&this.getQ3().value != -1
+        &&this.getQ4().value != -1;
     }
 
     public boolean isNotDeepest(){
         return this.getQ1().value == -1
-        &&this.getQ2().value == -1
-        &&this.getQ3().value == -1
-        &&this.getQ4().value == -1;
+        ||this.getQ2().value == -1
+        ||this.getQ3().value == -1
+        ||this.getQ4().value == -1;
     }
 
     public double epsilon(){
