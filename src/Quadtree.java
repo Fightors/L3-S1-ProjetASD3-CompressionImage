@@ -431,11 +431,7 @@ class Quadtree {
         return (this.getQ1().value != -1
         &&this.getQ2().value != -1
         &&this.getQ3().value != -1
-        &&this.getQ4().value != -1)||
-        (this.getQ1() != null
-        &&this.getQ2() != null
-        &&this.getQ3() !=null
-        &&this.getQ4() !=null);
+        &&this.getQ4().value != -1);
     }
 
 
