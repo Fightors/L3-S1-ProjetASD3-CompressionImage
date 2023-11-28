@@ -362,7 +362,14 @@ class Quadtree {
             int lum = this.lumMax();
             writer.write(String.valueOf(lum));
             writer.newLine();
-            int[][] tabTree= this.treeToTab(0);
+            int[][] tabTree;
+            if(this.areNotNull()){
+                tabTree= this.treeToTab(0);
+            }
+            else{
+                tabTree = new int[1][1];
+                tabTree[0][0] = this.getValue();
+            }
             for(int i= 0;i< dim;i++){
                 for(int j = 0; j<dim;j++){
                     if((dim*i+j)%17 == 0 && j > 10){
@@ -422,16 +429,32 @@ class Quadtree {
             if(noeudsACons % 4  !=1 ){
                 noeudsACons = noeudsACons - (noeudsACons % 4) + 1;
             }
-            this.compressRhoRecu(nbN-noeudsACons);
-            this.verifEqui();
+            this.compressRhoRecu(nbN - noeudsACons);
+            if(this.areNotNull()){
+                this.verifEqui();
+            }
         }
     }
 
     public boolean isDeepest(){
-        return (this.getQ1().value != -1
-        &&this.getQ2().value != -1
-        &&this.getQ3().value != -1
-        &&this.getQ4().value != -1);
+        return this.getQ1().value != -1
+        && this.getQ2().value != -1
+        && this.getQ3().value != -1
+        && this.getQ4().value != -1;
+    }
+
+    public boolean isDeepestOne(){
+        return this.getQ1().value != -1
+        || this.getQ1().value != -1
+        || this.getQ1().value != -1
+        || this.getQ1().value != -1;
+    }
+
+    public boolean areNotNull(){
+        return this.getQ1() != null
+        && this.getQ2() != null
+        && this.getQ3() != null
+        && this.getQ4() != null;
     }
 
 
@@ -447,13 +470,52 @@ class Quadtree {
 
     public void compressRhoRecu(int nbASuppr){
         System.out.println(nbASuppr);
-        if(nbASuppr > 0){
+        if(nbASuppr > 0 && this.areNotNull()){
             if(this.isDeepest()){
                 nbASuppr -=4;
                 this.compressLambdaRecu();
-            } 
+            }
             else{
-                if(!this.isDeepest()){
+                if(!this.isDeepestOne()){
+                    if(this.getQ1().isDeepest()
+                    &&this.getQ2().isDeepest()
+                    &&this.getQ3().isDeepest()
+                    &&this.getQ4().isDeepest()){
+                        double epsilon1 = this.getQ1().epsilon();
+                        double epsilon2 = this.getQ2().epsilon();
+                        double epsilon3 = this.getQ3().epsilon();
+                        double epsilon4 = this.getQ4().epsilon();
+                        double minEps = Math.min(Math.min(epsilon1,epsilon2),Math.min(epsilon3,epsilon4));
+                        for(int i=0;i<4;i++){
+                            if(minEps == epsilon1 && nbASuppr > 0 && epsilon1 != 99999.99){
+                                this.getQ1().compressLambdaRecu();
+                                nbASuppr -= 4;
+                                epsilon1=99999.99;
+                                minEps = Math.min(Math.min(epsilon2,epsilon3),epsilon4);
+                            }
+                            if(minEps == epsilon2 && nbASuppr > 0 && epsilon2 != 99999.99){
+                                this.getQ2().compressLambdaRecu();
+                                nbASuppr -= 4;
+                                epsilon2=99999.99;
+                                minEps = Math.min(Math.min(epsilon1,epsilon3),epsilon4);
+                            }
+                            if(minEps == epsilon3 && nbASuppr > 0 && epsilon3 != 99999.99){
+                                this.getQ3().compressLambdaRecu();
+                                nbASuppr -= 4;
+                                epsilon3=99999.99;
+                                minEps = Math.min(Math.min(epsilon1,epsilon2),epsilon4);
+                            }
+                            if(minEps == epsilon4 && nbASuppr > 0 && epsilon4 != 99999.99){
+                                this.getQ4().compressLambdaRecu();
+                                nbASuppr -= 4;
+                                epsilon4=99999.99;
+                                minEps = Math.min(Math.min(epsilon1,epsilon2),epsilon3);
+                            }
+                        }
+                        this.compressRhoRecu(nbASuppr);
+                    }
+                }
+                else {
                     if(this.getQ1().value==-1){
                         this.getQ1().compressRhoRecu(nbASuppr);
                     }
@@ -466,43 +528,9 @@ class Quadtree {
                     if(this.getQ4().value==-1){
                         this.getQ4().compressRhoRecu(nbASuppr);
                     }
-                }
-                else {
-                    if(this.getQ1().isDeepest()
-                    &&this.getQ2().isDeepest()
-                    &&this.getQ3().isDeepest()
-                    &&this.getQ4().isDeepest()){
-                        double epsilon1 = this.getQ1().epsilon();
-                        double epsilon2 = this.getQ2().epsilon();
-                        double epsilon3 = this.getQ3().epsilon();
-                        double epsilon4 = this.getQ4().epsilon();
-                        double minEps = Math.min(Math.min(epsilon1,epsilon2),Math.min(epsilon3,epsilon4));
-                        for(int i=0;i<4;i++){
-                            if(minEps == epsilon1 && nbASuppr > 0){
-                                this.getQ1().compressLambdaRecu();
-                                nbASuppr -= 4;
-                                epsilon1=99999.99;
-                                minEps = Math.min(Math.min(epsilon2,epsilon3),epsilon4);
-                            }
-                            if(minEps == epsilon2 && nbASuppr > 0){
-                                this.getQ2().compressLambdaRecu();
-                                nbASuppr -= 4;
-                                epsilon2=99999.99;
-                                minEps = Math.min(Math.min(epsilon1,epsilon3),epsilon4);
-                            }
-                            if(minEps == epsilon3 && nbASuppr > 0){
-                                this.getQ3().compressLambdaRecu();
-                                nbASuppr -= 4;
-                                epsilon3=99999.99;
-                                minEps = Math.min(Math.min(epsilon1,epsilon2),epsilon4);
-                            }
-                            if(minEps == epsilon4 && nbASuppr > 0){
-                                this.getQ4().compressLambdaRecu();
-                                nbASuppr -= 4;
-                                epsilon4=99999.99;
-                                minEps = Math.min(Math.min(epsilon1,epsilon2),epsilon3);
-                            }
-                        }
+                    if(nbASuppr>0){
+                        nbASuppr -=4;
+                        this.compressLambdaRecu();
                     }
                 }
             }
@@ -550,8 +578,9 @@ class Quadtree {
         }
         Quadtree QLambda = new Quadtree(chemin);
         Quadtree QRho = new Quadtree(chemin);
-        //QLambda.QtoString();
-        System.out.print("\nHauteur de l'arbre : ");
+        System.out.println("Arbre initial : ");
+        QLambda.QtoString();
+        System.out.print("\n\nHauteur de l'arbre : ");
         System.out.println(QLambda.hauteurMax());
         System.out.print("Luminosite maximum d'un pixel de l'arbre : ");
         System.out.println(QLambda.lumMax());
@@ -559,7 +588,7 @@ class Quadtree {
         System.out.println(QLambda.nbNoeuds());
         QLambda.compressLambda();
         System.out.println("\nCompression Lambda : ");
-        //QLambda.QtoString();
+        QLambda.QtoString();
         System.out.print("\nHauteur de l'arbre apres compression Lambda : ");
         System.out.println(QLambda.hauteurMax());
         System.out.print("Luminosite maximum d'un pixel de l'arbre apres compression Lambda : ");
