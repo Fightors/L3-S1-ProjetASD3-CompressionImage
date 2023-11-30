@@ -370,8 +370,8 @@ class Quadtree {
                 tabTree = new int[1][1];
                 tabTree[0][0] = this.getValue();
             }
-            for(int i= 0;i< dim;i++){
-                for(int j = 0; j<dim;j++){
+            for(int i= 0;i<dim;i++){
+                for(int j = 0;j<dim;j++){
                     if((dim*i+j)%17 == 0 && j > 10){
                         writer.write(String.valueOf(tabTree[i][j]) + "\n");
                     }else{
@@ -514,23 +514,23 @@ class Quadtree {
                         }
                         this.compressRhoRecu(nbASuppr);
                     }
-                }
-                else {
-                    if(this.getQ1().value==-1){
-                        this.getQ1().compressRhoRecu(nbASuppr);
-                    }
-                    if(this.getQ2().value==-1){
-                        this.getQ2().compressRhoRecu(nbASuppr);
-                    }
-                    if(this.getQ3().value==-1){
-                        this.getQ3().compressRhoRecu(nbASuppr);
-                    }
-                    if(this.getQ4().value==-1){
-                        this.getQ4().compressRhoRecu(nbASuppr);
-                    }
-                    if(nbASuppr>0){
-                        nbASuppr -=4;
-                        this.compressLambdaRecu();
+                    else {
+                        if(this.getQ1().value==-1){
+                            this.getQ1().compressRhoRecu(nbASuppr);
+                        }
+                        if(this.getQ2().value==-1){
+                            this.getQ2().compressRhoRecu(nbASuppr);
+                        }
+                        if(this.getQ3().value==-1){
+                            this.getQ3().compressRhoRecu(nbASuppr);
+                        }
+                        if(this.getQ4().value==-1){
+                            this.getQ4().compressRhoRecu(nbASuppr);
+                        }
+                        if(nbASuppr>0){
+                            nbASuppr -=4;
+                            this.compressLambdaRecu();
+                        }
                     }
                 }
             }
@@ -579,7 +579,7 @@ class Quadtree {
         Quadtree QLambda = new Quadtree(chemin);
         Quadtree QRho = new Quadtree(chemin);
         System.out.println("Arbre initial : ");
-        QLambda.QtoString();
+        //QLambda.QtoString();
         System.out.print("\n\nHauteur de l'arbre : ");
         System.out.println(QLambda.hauteurMax());
         System.out.print("Luminosite maximum d'un pixel de l'arbre : ");
@@ -588,18 +588,22 @@ class Quadtree {
         System.out.println(QLambda.nbNoeuds());
         QLambda.compressLambda();
         System.out.println("\nCompression Lambda : ");
-        QLambda.QtoString();
+        //QLambda.QtoString();
         System.out.print("\nHauteur de l'arbre apres compression Lambda : ");
         System.out.println(QLambda.hauteurMax());
         System.out.print("Luminosite maximum d'un pixel de l'arbre apres compression Lambda : ");
         System.out.println(QLambda.lumMax());
+        System.out.print("Nombre de noeuds de l'arbre apres compression Lambda : ");
+        System.out.println(QLambda.nbNoeuds());
         QRho.compressRho(p);
         System.out.println("\nCompression Rho : ");
-        QRho.QtoString();
+        //QRho.QtoString();
         System.out.print("\nHauteur de l'arbre apres compression Rho : ");
         System.out.println(QRho.hauteurMax());
         System.out.print("Luminosite maximum d'un pixel de l'arbre apres compression Rho : ");
         System.out.println(QRho.lumMax());
+         System.out.print("Nombre de noeuds de l'arbre apres compression Rho : ");
+        System.out.println(QRho.nbNoeuds());
         QLambda.toPGM("compressionLambda");
         QRho.toPGM("compressionRho");
     }
