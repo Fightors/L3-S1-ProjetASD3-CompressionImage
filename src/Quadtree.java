@@ -1,8 +1,8 @@
 /**
-* Université de Nantes
+* Universite de Nantes
 * 2023 / 2024
 * Projet d'ASD3 - X31I020
-* GODEFROY Théotime
+* GODEFROY Theotime
 * BOTANS Enzo
 * 584J
 */
@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 /**
 * Classe mere de tous les Quadtrees
-* Implémente les méthodes de compression Lambda et Rho
+* Implemente les methodes de compression Lambda et Rho
 */
 public class Quadtree {
 
@@ -42,7 +42,7 @@ public class Quadtree {
     public Quadtree Q4;
 
     /**
-    * Valeur statique utilisée pour la suppression de noeud lors de la compression Rho
+    * Valeur statique utilisee pour la suppression de noeud lors de la compression Rho
     */
     public static int nbASuppr;
 
@@ -50,9 +50,9 @@ public class Quadtree {
     * Constructeur d'une instance de Quadtree
      * @param v La valeur du noeud courant
      * @param q1 Le premier noeud descendant
-     * @param q2 Le deuxième noeud descendant
-     * @param q3 Le troisième noeud descendant
-     * @param q4 Le quatrième noeud descendant
+     * @param q2 Le deuxieme noeud descendant
+     * @param q3 Le troisieme noeud descendant
+     * @param q4 Le quatrieme noeud descendant
      */
     public Quadtree(int v, Quadtree q1, Quadtree q2, Quadtree q3, Quadtree q4) {
         this.value = v;
@@ -76,9 +76,9 @@ public class Quadtree {
 
     /**
     * Constructeur d'une instance de Quadtree
-    * Récolte les inforamtions dans le fichier PGM et le transforme en tableau 2D
-    * puis en Quadtree grâce à la fonction creerQuad
-    * @param chemin Le chemin et nom du fichier PGM à compresser
+    * Recolte les inforamtions dans le fichier PGM et le transforme en tableau 2D
+    * puis en Quadtree grace a la fonction creerQuad
+    * @param chemin Le chemin et nom du fichier PGM a compresser
     */
     public Quadtree(String chemin) {
         try {
@@ -114,7 +114,7 @@ public class Quadtree {
     }
 
     /**
-    * Création du Quadtree à partir d'un tableau 2D
+    * Creation du Quadtree a partir d'un tableau 2D
     * @param tabVal Tableau 2D contenant les informations des pixels du fichier PGM
     */
     public void creerQuad(int[][] tabVal) {
@@ -159,7 +159,7 @@ public class Quadtree {
 
     /**
     * Equilibrage du Quadtree 
-    * Si quatre feuille d'un noeud courant ont la même valeur, alors ils sont supprimés et la valeur remonte au noeud courant
+    * Si quatre feuille d'un noeud courant ont la même valeur, alors ils sont supprimes et la valeur remonte au noeud courant
     */
     public void verifEqui(){
         if(this.getQ1().value == -1){
@@ -197,7 +197,7 @@ public class Quadtree {
 
     /**
     * Getter d'un attribut de Quadtree
-    * Premier noeud descendant
+    * Deuxieme noeud descendant
     * @return Q2
     */
     public Quadtree getQ2() {
@@ -206,7 +206,7 @@ public class Quadtree {
 
     /**
     * Getter d'un attribut de Quadtree
-    * Premier noeud descendant
+    * Troisieme noeud descendant
     * @return Q3
     */
     public Quadtree getQ3() {
@@ -215,7 +215,7 @@ public class Quadtree {
 
     /**
     * Getter d'un attribut de Quadtree
-    * Premier noeud descendant
+    * Quatrieme noeud descendant
     * @return Q4
     */
     public Quadtree getQ4() {
@@ -241,7 +241,7 @@ public class Quadtree {
     }
 
     /**
-    * Vérifie si le noeud courant n'est relié qu'à des feuilles
+    * Verifie si le noeud courant n'est relie qu'a des feuilles
     * @return boolean
     */
     public boolean isDeepest(){
@@ -252,7 +252,7 @@ public class Quadtree {
     }
 
     /**
-    * Vérifie si le noeud courant n'est relié qu'à des branches
+    * Verifie si le noeud courant n'est relie qu'a des branches
     * @return boolean
     */
     public boolean areDeeper(){
@@ -263,7 +263,7 @@ public class Quadtree {
     }
 
     /**
-    * Vérifie si le noeud courant est relié à une branche au moins
+    * Verifie si le noeud courant est relie a une branche au moins
     * @return boolean
     */
     public boolean deeper(){
@@ -274,7 +274,7 @@ public class Quadtree {
     }
 
     /**
-    * Vérifie si le noeud courant n'est pas une feuille
+    * Verifie si le noeud courant n'est pas une feuille
     * @return boolean
     */
     public boolean areNotNull(){
@@ -285,7 +285,7 @@ public class Quadtree {
     }
 
     /**
-    * Vérifie si le noeud courant est une feuille
+    * Verifie si le noeud courant est une feuille
     * @return boolean
     */
     public boolean areNull(){
@@ -313,7 +313,7 @@ public class Quadtree {
     }
 
     /**
-    * Calcule la luminosité maximum du Quadtree
+    * Calcule la luminosite maximum du Quadtree
     * @return int
     */
     public int lumMax(){
@@ -504,17 +504,17 @@ public class Quadtree {
     }
     
     /**
-    * Création du fichier PGM à partir d'un Quadtree
-    * On appelera treeToTab pour passer de Quadtree à tableau 2D
+    * Creation du fichier PGM a partir d'un Quadtree
+    * On appelera treeToTab pour passer de Quadtree a tableau 2D
     * On transformera ensuite ce tableau en fichier PGM
-    * @param nomFichier Nom du fichier PGM qui sera créé
+    * @param nomFichier Nom du fichier PGM qui sera cree
     */
     public void toPGM(String nomFichier){
         String fichier = nomFichier+".pgm";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fichier))){
             writer.write("P2");
             writer.newLine();
-            writer.write("# Photo généré après compression");
+            writer.write("# Photo genere apres compression");
             writer.newLine();
             int dim = (int)Math.pow(2,this.hauteurMax());
             writer.write(dim + " " + dim);
@@ -548,9 +548,9 @@ public class Quadtree {
     }
 
     /**
-    * Création du fichier texte à partir d'un Quadtree
-    * On appelera stringToTxtRecu pour écrire chaque valeur des feuilles du Quadtree
-    * @param nomFichier Nom du fichier texte qui sera créé
+    * Creation du fichier texte a partir d'un Quadtree
+    * On appelera stringToTxtRecu pour ecrire chaque valeur des feuilles du Quadtree
+    * @param nomFichier Nom du fichier texte qui sera cree
     */
     public void stringToTxt(String nomFichier){
         String fichier = nomFichier + ".txt";
@@ -563,8 +563,8 @@ public class Quadtree {
     }
 
     /**
-    * Ecriture des feuilles d'un Quadtree ou appel récursif en cas de branche dans un fichier texte
-    * @param bw Buffer d'édcriture tulisé pour écrire dans le fichier texte
+    * Ecriture des feuilles d'un Quadtree ou appel recursif en cas de branche dans un fichier texte
+    * @param bw Buffer d'edcriture utilise pour ecrire dans le fichier texte
     */
     public void stringToTxtRecu(BufferedWriter bw){
         try{
@@ -600,8 +600,8 @@ public class Quadtree {
 
     /**
     * Compression Lambda d'un Quadtree
-    * On appelera compressLambdaRecu pour la compression de manière récursive
-    * On appelera verifEqui pour re-équilibrer l'arbre après la compression 
+    * On appelera compressLambdaRecu pour la compression de manière recursive
+    * On appelera verifEqui pour re-equilibrer l'arbre apres la compression 
     */
     public void compressLambda(){
         this.compressLambdaRecu();
@@ -609,7 +609,7 @@ public class Quadtree {
     }
 
     /**
-    * Compression d'un Quadtree avec la méthode Lambda
+    * Compression d'un Quadtree avec la methode Lambda
     */
     public void compressLambdaRecu() {
         if(this.areNotNull()){
@@ -643,10 +643,10 @@ public class Quadtree {
 
     /**
     * Compression Rho d'un Quadtree
-    * On appelera nbNoeuds pour trouver le nombre de noeuds à supprimer
-    * On appelera compressRhoRecu pour la compression de manière récursive
-    * On appelera verifEqui pour re-équilibrer l'arbre après la compression 
-    * @param p Pourcentage maximum de l'image qui doit subsister après la compression
+    * On appelera nbNoeuds pour trouver le nombre de noeuds a supprimer
+    * On appelera compressRhoRecu pour la compression de manière recursive
+    * On appelera verifEqui pour re-equilibrer l'arbre apres la compression 
+    * @param p Pourcentage maximum de l'image qui doit subsister apres la compression
     */
     public void compressRho(int p) {
         if (p < 0 || p > 100) {
@@ -670,7 +670,7 @@ public class Quadtree {
 
     /**
     * Calcule de l'Espilon maximum d'un Quadtree
-    * @return Epsilon maximum parmis les quatres calculés
+    * @return Epsilon maximum parmis les quatres calcules
     */
     public double epsilon(){
         double gamma = Math.exp(0.25*(Math.log(0.1+this.getQ1().value) + Math.log(0.1+this.getQ2().value)
@@ -683,7 +683,7 @@ public class Quadtree {
     }
 
     /**
-    * Compression d'un Quadtree avec la méthode Rho
+    * Compression d'un Quadtree avec la methode Rho
     */
     public void compressRhoRecu(){
         if(nbASuppr > 0 && this.areNotNull()){
@@ -769,7 +769,7 @@ public class Quadtree {
     }
 
     /**
-    * Affichage du Quadtree avec chaque quatuor de noeuds entre parenthèses
+    * Affichage du Quadtree avec chaque quatuor de noeuds entre parentheses
     */
     public void QtoString() {
         if (this != null) {
@@ -800,7 +800,7 @@ public class Quadtree {
 
     /**
     * Programme principal
-    * @param args Liste des arguments entrés au démarrage de l'exécution du programme
+    * @param args Liste des arguments entres au demarrage de l'execution du programme
     */
     public static void main(String[] args) {
         String chemin;
