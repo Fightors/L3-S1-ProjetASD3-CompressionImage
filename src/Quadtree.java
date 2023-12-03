@@ -14,7 +14,7 @@ import java.util.Scanner;
 * Classe mere de tous les Quadtrees
 * Implémente les méthodes de compression Lambda et Rho
 */
-class Quadtree {
+public class Quadtree {
 
     /**
     * La valeur du noeud (value = -1 -> branche | value != -1 -> feuille)
@@ -22,11 +22,23 @@ class Quadtree {
     public int value;
     
     /**
-    * Les quatres noeuds descendant du Quadtree courant
+    * Premier noeud du Quadtree courant
     */
     public Quadtree Q1;
+
+    /**
+    * Deuxième noeud du Quadtree courant
+    */
     public Quadtree Q2;
+
+    /**
+    * Troisième noeud du Quadtree courant
+    */
     public Quadtree Q3;
+
+    /**
+    * Quatrième noeud du Quadtree courant
+    */
     public Quadtree Q4;
 
     /**
@@ -222,6 +234,7 @@ class Quadtree {
     /**
     * Setter d'un attribut de Quadtree
     * Valeur du noeud courant devient v
+    * @param v Nouvelle valeur de value
     */
     public void setValue(int v) {
         this.value = v;
@@ -787,6 +800,7 @@ class Quadtree {
 
     /**
     * Programme principal
+    * @param args Liste des arguments entrés au démarrage de l'exécution du programme
     */
     public static void main(String[] args) {
         String chemin;
