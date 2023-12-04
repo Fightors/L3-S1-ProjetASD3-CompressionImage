@@ -805,6 +805,7 @@ public class Quadtree {
     public static void main(String[] args) {
         String chemin;
         int p;
+        int nbNoeudInitial;
         if(args.length == 2){
             chemin = args[0];
             p = Integer.parseInt(args[1]);
@@ -815,6 +816,7 @@ public class Quadtree {
         }
         Quadtree QLambda = new Quadtree(chemin);
         Quadtree QRho = new Quadtree(chemin);
+        nbNoeudInitial = QLambda.nbNoeuds();
         System.out.println("Arbre initial : ");
         //QLambda.QtoString();
         System.out.print("\n\nHauteur de l'arbre : ");
@@ -822,7 +824,8 @@ public class Quadtree {
         System.out.print("Luminosite maximum d'un pixel de l'arbre : ");
         System.out.println(QLambda.lumMax());
         System.out.print("Nombre de noeuds de l'arbre : ");
-        System.out.println(QLambda.nbNoeuds());
+        System.out.println(nbNoeudInitial);
+
         QLambda.compressLambda();
         System.out.println("\nCompression Lambda : ");
         //QLambda.QtoString();
@@ -832,17 +835,24 @@ public class Quadtree {
         System.out.println(QLambda.lumMax());
         System.out.print("Nombre de noeuds de l'arbre apres compression Lambda : ");
         System.out.println(QLambda.nbNoeuds());
+        System.out.print("Taux de compression realise avec la compression Lambda : ");
+        System.out.print((int)(QLambda.nbNoeuds()*100/nbNoeudInitial));
+        System.out.print("%");
+        QLambda.stringToTxt("treeCompressionLambda");
+        QLambda.toPGM("compressionLambda");
+
         QRho.compressRho(p);
         System.out.println("\nCompression Rho : ");
-        QRho.QtoString();
+        //QRho.QtoString();
         System.out.print("\nHauteur de l'arbre apres compression Rho : ");
         System.out.println(QRho.hauteurMax());
         System.out.print("Luminosite maximum d'un pixel de l'arbre apres compression Rho : ");
         System.out.println(QRho.lumMax());
         System.out.print("Nombre de noeuds de l'arbre apres compression Rho : ");
         System.out.println(QRho.nbNoeuds());
-        QLambda.stringToTxt("treeCompressionLambda");
-        QLambda.toPGM("compressionLambda");
+        System.out.print("Taux de compression realise avec la compression Rho : ");
+        System.out.print(p);
+        System.out.print("%");
         QRho.stringToTxt("treeCompressionRho");
         QRho.toPGM("compressionRho");
     }
