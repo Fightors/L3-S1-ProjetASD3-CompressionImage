@@ -696,6 +696,19 @@ public class Quadtree {
                 int hQ2 = this.getQ2().hauteurMax();
                 int hQ3 = this.getQ3().hauteurMax();
                 int hQ4 = this.getQ4().hauteurMax();
+                int maxhQ = Math.max(Math.max(hQ1,hQ2),Math.max(hQ3,hQ4));
+                if(hQ1 == maxhQ){
+                    this.getQ1().compressRhoRecu();
+                }
+                if(hQ2 == maxhQ){
+                    this.getQ2().compressRhoRecu();
+                }
+                if(hQ3 == maxhQ){
+                    this.getQ3().compressRhoRecu();
+                }
+                if(hQ4 == maxhQ){
+                    this.getQ4().compressRhoRecu();
+                }
                 if(this.areDeeper()){
                     if(this.getQ1().isDeepest()
                     && this.getQ2().isDeepest()
@@ -734,38 +747,36 @@ public class Quadtree {
                         }
                     }
                     else{
-                        int maxhQ = Math.max(Math.max(hQ1,hQ2),Math.max(hQ3,hQ4));
                         if(hQ1 == maxhQ){
                             this.getQ1().compressRhoRecu();
                         }
-                        else if(hQ2 == maxhQ){
+                        if(hQ2 == maxhQ){
                             this.getQ2().compressRhoRecu();
                         }
-                        else if(hQ3 == maxhQ){
+                        if(hQ3 == maxhQ){
                             this.getQ3().compressRhoRecu();
                         }
-                        else if(hQ4 == maxhQ){
+                        if(hQ4 == maxhQ){
                             this.getQ4().compressRhoRecu();
                         }
                     }
                 }
                 else{
-                    int maxhQ = Math.max(Math.max(hQ1,hQ2),Math.max(hQ3,hQ4));
                     if(hQ1 == maxhQ){
                         this.getQ1().compressRhoRecu();
                     }
-                    else if(hQ2 == maxhQ){
+                    if(hQ2 == maxhQ){
                         this.getQ2().compressRhoRecu();
                     }
-                    else if(hQ3 == maxhQ){
+                    if(hQ3 == maxhQ){
                         this.getQ3().compressRhoRecu();
                     }
-                    else if(hQ4 == maxhQ){
+                    if(hQ4 == maxhQ){
                         this.getQ4().compressRhoRecu();
                     }
                 }
             }
-        } 
+        }
     }
 
     /**
@@ -817,127 +828,46 @@ public class Quadtree {
         Quadtree QLambda = new Quadtree(chemin);
         Quadtree QRho = new Quadtree(chemin);
         nbNoeudInitial = QLambda.nbNoeuds();
-        System.out.println("Arbre initial : ");
+        System.out.println("\n=====Arbre initial======");
         //QLambda.QtoString();
-        System.out.print("\n\nHauteur de l'arbre : ");
+        System.out.print("\nHauteur : ");
         System.out.println(QLambda.hauteurMax());
-        System.out.print("Luminosite maximum d'un pixel de l'arbre : ");
+        System.out.print("Luminosite Max : ");
         System.out.println(QLambda.lumMax());
-        System.out.print("Nombre de noeuds de l'arbre : ");
+        System.out.print("Nombre de Noeuds : ");
         System.out.println(nbNoeudInitial);
+        System.out.println("========================");
 
         QLambda.compressLambda();
-        System.out.println("\nCompression Lambda : ");
+        System.out.println("\n===Compression Lambda===");
         //QLambda.QtoString();
-        System.out.print("\nHauteur de l'arbre apres compression Lambda : ");
+        System.out.print("\nHauteur : ");
         System.out.println(QLambda.hauteurMax());
-        System.out.print("Luminosite maximum d'un pixel de l'arbre apres compression Lambda : ");
+        System.out.print("Luminosite Max : ");
         System.out.println(QLambda.lumMax());
-        System.out.print("Nombre de noeuds de l'arbre apres compression Lambda : ");
+        System.out.print("Nombre de Noeuds : ");
         System.out.println(QLambda.nbNoeuds());
-        System.out.print("Taux de compression realise avec la compression Lambda : ");
+        System.out.print("Taux de compression : ");
         System.out.print((int)(QLambda.nbNoeuds()*100/nbNoeudInitial));
-        System.out.print("%");
+        System.out.println("%");
         QLambda.stringToTxt("treeCompressionLambda");
         QLambda.toPGM("compressionLambda");
+        System.out.println("========================");
 
         QRho.compressRho(p);
-        System.out.println("\nCompression Rho : ");
+        System.out.println("\n====Compression Rho=====");
         //QRho.QtoString();
-        System.out.print("\nHauteur de l'arbre apres compression Rho : ");
+        System.out.print("\nHauteur : ");
         System.out.println(QRho.hauteurMax());
-        System.out.print("Luminosite maximum d'un pixel de l'arbre apres compression Rho : ");
+        System.out.print("Luminosite Max: ");
         System.out.println(QRho.lumMax());
-        System.out.print("Nombre de noeuds de l'arbre apres compression Rho : ");
+        System.out.print("Nombre de Noeuds : ");
         System.out.println(QRho.nbNoeuds());
-        System.out.print("Taux de compression realise avec la compression Rho : ");
+        System.out.print("Taux de compression : ");
         System.out.print(p);
-        System.out.print("%");
+        System.out.println("%");
         QRho.stringToTxt("treeCompressionRho");
         QRho.toPGM("compressionRho");
+        System.out.println("========================\n");
     }
 }
-
-/*
-    public void compressRhoRecuOld(){
-        if(nbASuppr > 0 && this.areNotNull()){
-            if(this.isDeepest()){
-                this.compressLambdaRecu();
-                nbASuppr-=4;
-            }
-            else{
-                int hQ1 = this.getQ1().hauteurMax();
-                int hQ2 = this.getQ2().hauteurMax();
-                int hQ3 = this.getQ3().hauteurMax();
-                int hQ4 = this.getQ4().hauteurMax();
-                int maxhQ = Math.max(Math.max(hQ1,hQ2),Math.max(hQ3,hQ4));
-                if(this.areDeeper()){
-                    if(this.getQ1().deeper()
-                    || this.getQ2().deeper()
-                    || this.getQ3().deeper()
-                    || this.getQ4().deeper()){
-                        if(hQ1 == maxhQ){
-                            this.getQ1().compressRhoRecuOld();
-                        }
-                        else if(hQ2 == maxhQ){
-                            this.getQ2().compressRhoRecuOld();
-                        }
-                        else if(hQ3 == maxhQ){
-                            this.getQ3().compressRhoRecuOld();
-                        }
-                        else if(hQ4 == maxhQ){
-                            this.getQ4().compressRhoRecuOld();
-                        }
-                    }
-                    else{
-                        double epsilon1 = this.getQ1().epsilon();
-                        double epsilon2 = this.getQ2().epsilon();
-                        double epsilon3 = this.getQ3().epsilon();
-                        double epsilon4 = this.getQ4().epsilon();
-                        double minEps = Math.min(Math.min(epsilon1,epsilon2),Math.min(epsilon3,epsilon4));
-                        for(int i=0;i<4;i++){
-                            if(minEps == epsilon1 && nbASuppr > 0 && epsilon1!=99999.99){
-                                this.getQ1().compressLambdaRecu();
-                                nbASuppr-=4;
-                                epsilon1=99999.99;
-                                minEps = Math.min(Math.min(epsilon2,epsilon3),epsilon4);
-                            }
-                            if(minEps == epsilon2 && nbASuppr > 0 && epsilon2!=99999.99){
-                                this.getQ2().compressLambdaRecu();
-                                nbASuppr-=4;
-                                epsilon2=99999.99;
-                                minEps = Math.min(Math.min(epsilon1,epsilon3),epsilon4);
-                            }
-                            if(minEps == epsilon3 && nbASuppr > 0 && epsilon3!=99999.99){
-                                this.getQ3().compressLambdaRecu();
-                                nbASuppr-=4;
-                                epsilon3=99999.99;
-                                minEps = Math.min(Math.min(epsilon1,epsilon2),epsilon4);
-                            }
-                            if(minEps == epsilon4 && nbASuppr > 0 && epsilon4!=99999.99){
-                                this.getQ4().compressLambdaRecu();
-                                nbASuppr-=4;
-                                epsilon4=99999.99;
-                                minEps = Math.min(Math.min(epsilon1,epsilon2),epsilon3);
-                            }
-                        }
-                    }
-                }
-                if(this.getQ1().getValue() == -1 && maxhQ == hQ1){
-                    this.getQ1().compressRhoRecuOld();
-                }
-                else if(this.getQ2().getValue() == -1 && maxhQ == hQ2){
-                    this.getQ2().compressRhoRecuOld();
-                }
-                else if(this.getQ3().getValue() == -1 && maxhQ == hQ3){
-                    this.getQ3().compressRhoRecuOld();
-                }
-                else if(this.getQ4().getValue() == -1 && maxhQ == hQ4){
-                    this.getQ4().compressRhoRecuOld();
-                }
-                this.compressRhoRecuOld();
-            }
-        }
-    }
-
-    */
