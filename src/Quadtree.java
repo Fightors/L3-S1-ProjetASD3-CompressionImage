@@ -9,6 +9,7 @@
 
 import java.io.*;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 /**
 * Classe mere de tous les Quadtrees
@@ -40,6 +41,10 @@ public class Quadtree {
     * Quatrième noeud du Quadtree courant
     */
     public Quadtree Q4;
+
+    public static ArrayList<Quadtree> noeudComp;
+
+    public static ArrayList<Double> epsilonComp;
 
     /**
     * Valeur statique utilisee pour la suppression de noeud lors de la compression Rho
@@ -106,7 +111,8 @@ public class Quadtree {
             this.Q4 = null;
             this.creerQuad(tabQ);
             this.verifEqui();
-
+            noeudComp = new ArrayList<Quadtree>();
+            epsilonComp = new ArrayList<Double>();
             scanner.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -162,27 +168,29 @@ public class Quadtree {
     * Si quatre feuille d'un noeud courant ont la même valeur, alors ils sont supprimes et la valeur remonte au noeud courant
     */
     public void verifEqui(){
-        if(this.getQ1().value == -1){
-            this.Q1.verifEqui();
-        } 
-        if(this.getQ2().value == -1){
-            this.Q2.verifEqui();
-        } 
-        if(this.getQ3().value == -1){
-            this.Q3.verifEqui();
-        } 
-        if(this.getQ4().value == -1){
-            this.Q4.verifEqui();
-        }
-        if (this.getQ1().getValue() == this.getQ2().getValue() 
-        && this.getQ2().getValue() == this.getQ3().getValue()
-        && this.getQ3().getValue() == this.getQ4().getValue()
-        && this.getQ1().getValue() != -1){
-            this.value = this.getQ1().getValue();
-            this.Q1=null;
-            this.Q2=null;
-            this.Q3=null;
-            this.Q4=null;
+        if(this.areNotNull()){
+            if(this.getQ1().value == -1){
+                this.Q1.verifEqui();
+            } 
+            if(this.getQ2().value == -1){
+                this.Q2.verifEqui();
+            } 
+            if(this.getQ3().value == -1){
+                this.Q3.verifEqui();
+            } 
+            if(this.getQ4().value == -1){
+                this.Q4.verifEqui();
+            }
+            if (this.getQ1().getValue() == this.getQ2().getValue() 
+            && this.getQ2().getValue() == this.getQ3().getValue()
+            && this.getQ3().getValue() == this.getQ4().getValue()
+            && this.getQ1().getValue() != -1){
+                this.value = this.getQ1().getValue();
+                this.Q1=null;
+                this.Q2=null;
+                this.Q3=null;
+                this.Q4=null;
+            }
         }
     }
 
@@ -334,7 +342,10 @@ public class Quadtree {
     * @return int
     */
     public int nbNoeuds(){
-        if(this.isDeepest()){
+        if(this.areNull()){
+            return 1;
+        }
+        else if(this.isDeepest()){
             return 4;
         }
         else{
@@ -642,6 +653,40 @@ public class Quadtree {
     }
 
     /**
+     * Stocke les noeuds compressibles dans le tableau noeudComp
+     * Stocke les epsilons des noeuds compressibles dans epsilonComp
+     * Les deux sont stockes aux mêmes indices
+     */
+    public void stockNoeudComp(){
+        if(this.areNotNull()){
+            if(this.isDeepest()){
+                noeudComp.add(this);
+                epsilonComp.add(this.epsilon());
+            }
+            else{
+                this.getQ1().stockNoeudComp();
+                this.getQ2().stockNoeudComp();
+                this.getQ3().stockNoeudComp();
+                this.getQ4().stockNoeudComp();
+            }
+        }
+    }
+
+    /**
+    * Trouve l'indice du Epsilon le plus petit dans notre tableau epsilonComp
+    * @return L'indice trouvé, 0 sinon
+    */
+    public int indiceMinEps(){
+        int minEpsI = 0;
+        for(int i = 0; i<epsilonComp.size(); i++){
+            if(epsilonComp.get(minEpsI) > epsilonComp.get(i)){
+                minEpsI = i;
+            }
+        }
+        return minEpsI;
+    }
+
+    /**
     * Compression Rho d'un Quadtree
     * On appelera nbNoeuds pour trouver le nombre de noeuds a supprimer
     * On appelera compressRhoRecu pour la compression de manière recursive
@@ -660,7 +705,7 @@ public class Quadtree {
             }
             nbASuppr = nbN - noeudsACons;
             while(nbASuppr>0){
-                 this.compressRhoRecu();
+                 this.compressRhoIte();
             }
             if(this.areNotNull()){
                 this.verifEqui();
@@ -685,98 +730,13 @@ public class Quadtree {
     /**
     * Compression d'un Quadtree avec la methode Rho
     */
-    public void compressRhoRecu(){
-        if(nbASuppr > 0 && this.areNotNull()){
-            if(this.isDeepest()){
-                this.compressLambdaRecu();
-                nbASuppr-=4;
-            }
-            else{
-                int hQ1 = this.getQ1().hauteurMax();
-                int hQ2 = this.getQ2().hauteurMax();
-                int hQ3 = this.getQ3().hauteurMax();
-                int hQ4 = this.getQ4().hauteurMax();
-                int maxhQ = Math.max(Math.max(hQ1,hQ2),Math.max(hQ3,hQ4));
-                if(hQ1 == maxhQ){
-                    this.getQ1().compressRhoRecu();
-                }
-                if(hQ2 == maxhQ){
-                    this.getQ2().compressRhoRecu();
-                }
-                if(hQ3 == maxhQ){
-                    this.getQ3().compressRhoRecu();
-                }
-                if(hQ4 == maxhQ){
-                    this.getQ4().compressRhoRecu();
-                }
-                if(this.areDeeper()){
-                    if(this.getQ1().isDeepest()
-                    && this.getQ2().isDeepest()
-                    && this.getQ3().isDeepest()
-                    && this.getQ4().isDeepest()){
-                        double epsilon1 = this.getQ1().epsilon();
-                        double epsilon2 = this.getQ2().epsilon();
-                        double epsilon3 = this.getQ3().epsilon();
-                        double epsilon4 = this.getQ4().epsilon();
-                        double minEps = Math.min(Math.min(epsilon1,epsilon2),Math.min(epsilon3,epsilon4));
-                        for(int i=0;i<4;i++){
-                            if(minEps == epsilon1 && nbASuppr > 0 && epsilon1!=99999.99){
-                                this.getQ1().compressLambdaRecu();
-                                nbASuppr-=4;
-                                epsilon1=99999.99;
-                                minEps = Math.min(Math.min(epsilon2,epsilon3),epsilon4);
-                            }
-                            if(minEps == epsilon2 && nbASuppr > 0 && epsilon2!=99999.99){
-                                this.getQ2().compressLambdaRecu();
-                                nbASuppr-=4;
-                                epsilon2=99999.99;
-                                minEps = Math.min(Math.min(epsilon1,epsilon3),epsilon4);
-                            }
-                            if(minEps == epsilon3 && nbASuppr > 0 && epsilon3!=99999.99){
-                                this.getQ3().compressLambdaRecu();
-                                nbASuppr-=4;
-                                epsilon3=99999.99;
-                                minEps = Math.min(Math.min(epsilon1,epsilon2),epsilon4);
-                            }
-                            if(minEps == epsilon4 && nbASuppr > 0 && epsilon4!=99999.99){
-                                this.getQ4().compressLambdaRecu();
-                                nbASuppr-=4;
-                                epsilon4=99999.99;
-                                minEps = Math.min(Math.min(epsilon1,epsilon2),epsilon3);
-                            }
-                        }
-                    }
-                    else{
-                        if(hQ1 == maxhQ){
-                            this.getQ1().compressRhoRecu();
-                        }
-                        if(hQ2 == maxhQ){
-                            this.getQ2().compressRhoRecu();
-                        }
-                        if(hQ3 == maxhQ){
-                            this.getQ3().compressRhoRecu();
-                        }
-                        if(hQ4 == maxhQ){
-                            this.getQ4().compressRhoRecu();
-                        }
-                    }
-                }
-                else{
-                    if(hQ1 == maxhQ){
-                        this.getQ1().compressRhoRecu();
-                    }
-                    if(hQ2 == maxhQ){
-                        this.getQ2().compressRhoRecu();
-                    }
-                    if(hQ3 == maxhQ){
-                        this.getQ3().compressRhoRecu();
-                    }
-                    if(hQ4 == maxhQ){
-                        this.getQ4().compressRhoRecu();
-                    }
-                }
-            }
-        }
+    public void compressRhoIte(){
+        this.stockNoeudComp();
+        int minEpsI = this.indiceMinEps();
+        noeudComp.get(minEpsI).compressLambda();
+        nbASuppr-=4;
+        noeudComp.clear();
+        epsilonComp.clear();
     }
 
     /**
