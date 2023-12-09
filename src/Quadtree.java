@@ -46,6 +46,8 @@ public class Quadtree {
 
     public static ArrayList<Double> epsilonComp;
 
+    public static int hmax;
+
     /**
     * Valeur statique utilisee pour la suppression de noeud lors de la compression Rho
     */
@@ -101,7 +103,7 @@ public class Quadtree {
                     tabQ[i][j] = Integer.parseInt(scanner.next());
                 }
             }
-            int hmax = (int) (Math.log(dim) / Math.log(2));
+            hmax = (int) (Math.log(dim) / Math.log(2));
             //System.out.println(hmax);
 
             this.value = -1;
@@ -381,11 +383,97 @@ public class Quadtree {
         }
     }
 
+    public int[][] treeToTab(int val, int h){
+        if(this.isDeepest() && h == hmax){ //On est dans un noeud et à la hauteur max 
+            int[][] tabFinal = new int[2][2];
+            tabFinal[0][0] = this.getQ1().getValue();
+            tabFinal[0][1] = this.getQ2().getValue();
+            tabFinal[1][1] = this.getQ3().getValue();
+            tabFinal[1][0] = this.getQ4().getValue();
+            return tabFinal;
+        }else if(this.getValue() != -1 && (hmax >h)){ //On est dans une feuille mais pas a la hauteur max 
+            int[][] tab = new int[2][2];
+            int nvVal = this.getValue();
+            tab[0][0] = nvVal;
+            tab[0][1] = nvVal;
+            tab[1][1] = nvVal;
+            tab[1][0] = nvVal;
+            int[][] tabQ1 = treeToTab(nvVal, h+1);
+            int[][] tabQ2 = treeToTab(nvVal, h+1);
+            int[][] tabQ3 = treeToTab(nvVal, h+1);
+            int[][] tabQ4 = treeToTab(nvVal, h+1);
+        }else{ //On est dans un noeud mais pas à la hauteur max 
+            int[][] tabQ1 = new int[2][2];
+            int[][] tabQ2 = new int[2][2];
+            int[][] tabQ3 = new int[2][2];
+            int[][] tabQ4 = new int[2][2];
+            int hQ1 = 1;
+            int hQ2 = 1;
+            int hQ3 = 1;
+            int hQ4 = 1;
+            if(this.getQ1().getValue() == -1){
+                hQ1 = h+1;
+                tabQ1 = this.getQ1().treeToTab(this.getQ1().getValue(),hQ1);
+            }
+            else{
+                tabQ1[0][0] = this.Q1.getValue();
+                tabQ1[0][1] = this.Q1.getValue();
+                tabQ1[1][1] = this.Q1.getValue();
+                tabQ1[1][0] = this.Q1.getValue();
+            }
+            if(this.getQ2().getValue() == -1){
+                hQ2 = h+1;
+                tabQ2 = this.getQ2().treeToTab(this.getQ2().getValue(),hQ2);
+            }
+            else{
+                tabQ2[0][0] = this.Q2.getValue();
+                tabQ2[0][1] = this.Q2.getValue();
+                tabQ2[1][1] = this.Q2.getValue();
+                tabQ2[1][0] = this.Q2.getValue();
+            }
+            if(this.getQ3().getValue() == -1){
+                hQ3 = h+1;
+                tabQ3 = this.getQ3().treeToTab(this.getQ3().getValue(),hQ3);
+            }
+            else{
+                tabQ3[0][0] = this.Q3.getValue();
+                tabQ3[0][1] = this.Q3.getValue();
+                tabQ3[1][1] = this.Q3.getValue();
+                tabQ3[1][0] = this.Q3.getValue();
+            }
+            if(this.getQ4().getValue() == -1){
+                hQ4 = h+1;
+                tabQ4 = this.getQ4().treeToTab(this.getQ4().getValue(),hQ4);
+            }
+            else{
+                tabQ4[0][0] = this.Q4.getValue();
+                tabQ4[0][1] = this.Q4.getValue();
+                tabQ4[1][1] = this.Q4.getValue();
+                tabQ4[1][0] = this.Q4.getValue();
+            }
+            if(hQ1 == hQ2 && hQ2 == hQ3 && hQ3 == hQ4){
+                int taille = tabQ1.length;
+                int[][] tabFinal = new int[taille*2][taille*2];
+                for(int i = 0; i < taille; i++){
+                    for(int j = 0; j < taille; j++){
+                        tabFinal[i][j]=tabQ1[i % tabQ1.length][j % tabQ1.length];
+                        tabFinal[i][j + taille]=tabQ2[i % tabQ2.length][j % tabQ2.length];
+                        tabFinal[i + taille ][j + taille]=tabQ4[i % tabQ4.length][j % tabQ4.length];
+                        tabFinal[i + taille][j]=tabQ3[i % tabQ3.length][j % tabQ3.length];
+                    }
+                }
+                return tabFinal;
+            }
+        }
+        int[][] tab = new int[0][0];
+        return tab = new int[0][0];
+    }
     /**
     * Transforme un Quadtree en tableau 2D
     * @param h La hauteur actuelle dans le Quadtree
     * @return tabFinal
     */
+    /**
     public int[][] treeToTab(int h){
         if(this.isDeepest()){
             int[][] tabFinal = new int[2][2];
@@ -513,7 +601,7 @@ public class Quadtree {
             }
         }
     }
-    
+    */
     /**
     * Creation du fichier PGM a partir d'un Quadtree
     * On appelera treeToTab pour passer de Quadtree a tableau 2D
@@ -535,7 +623,7 @@ public class Quadtree {
             writer.newLine();
             int[][] tabTree;
             if(this.areNotNull()){
-                tabTree= this.treeToTab(0);
+                tabTree= this.treeToTab(0,0);
             }
             else{
                 tabTree = new int[1][1];
