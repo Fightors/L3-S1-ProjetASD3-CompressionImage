@@ -653,6 +653,34 @@ public class Quadtree {
     }
 
     /**
+    * Insertion de manière dichotomique de l'epsilon dans Epsiloncomp
+    * @return L'indice où l'Epsilon a été inséré
+    */
+    public int insertDicho(ArrayList<Double> liste, double element) {
+        int debut = 0;
+        int fin = liste.size() - 1;
+        
+        while (debut <= fin) {
+            int milieu = (debut + fin) / 2;
+            if (liste.get(milieu) == element) {
+                // Si l'élément est déjà présent, on l'insère à la droite de celui-ci
+                liste.add(milieu + 1, element);
+                return milieu +1;
+            } 
+            else if (liste.get(milieu) < element) {
+                debut = milieu + 1;
+            } 
+            else {
+                fin = milieu - 1;
+            }
+        }
+        
+        // Si l'élément n'existe pas dans la liste, on l'insère à la bonne position
+        liste.add(debut, element);
+        return debut;
+    }
+
+    /**
      * Stocke les noeuds compressibles dans le tableau noeudComp
      * Stocke les epsilons des noeuds compressibles dans epsilonComp
      * Les deux sont stockes aux mêmes indices
@@ -660,8 +688,8 @@ public class Quadtree {
     public void stockNoeudComp(){
         if(this.areNotNull()){
             if(this.isDeepest()){
-                noeudComp.add(this);
-                epsilonComp.add(this.epsilon());
+                int indEps = this.insertDicho(epsilonComp, this.epsilon());
+                noeudComp.add(indEps,this);
             }
             else{
                 this.getQ1().stockNoeudComp();
@@ -704,8 +732,9 @@ public class Quadtree {
                 noeudsACons = noeudsACons - (noeudsACons % 4) + 1;
             }
             nbASuppr = nbN - noeudsACons;
+            this.stockNoeudComp();
             while(nbASuppr>0){
-                 this.compressRhoIte();
+                this.compressRhoIte();
             }
             if(this.areNotNull()){
                 this.verifEqui();
@@ -731,12 +760,10 @@ public class Quadtree {
     * Compression d'un Quadtree avec la methode Rho
     */
     public void compressRhoIte(){
-        this.stockNoeudComp();
-        int minEpsI = this.indiceMinEps();
-        noeudComp.get(minEpsI).compressLambda();
+        noeudComp.get(0).compressLambda();
         nbASuppr-=4;
-        noeudComp.clear();
-        epsilonComp.clear();
+        noeudComp.remove(0);
+        epsilonComp.remove(0);
     }
 
     /**
