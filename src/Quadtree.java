@@ -383,7 +383,54 @@ public class Quadtree {
         }
     }
 
-    public int[][] treeToTab(int val, int h){
+    public int[][] treeToTab(int h){
+        if(this.getValue() != -1 && (hmax >h)){ //On est dans une feuille mais pas a la hauteur max 
+            int[][] tab = new int[(int)Math.pow(2,hmax-h)][(int)Math.pow(2,hmax-h)];
+            for(int i = 0; i<tab.length;i++){
+                for(int j = 0; j<tab.length;j++){
+                    tab[i][j]=this.getValue();
+                }
+            }
+            return tab;
+        }
+        else if (this.getValue() != -1 && (hmax == h)){
+            int[][] tab = new int[1][1];
+            tab[0][0]=this.getValue();
+            return tab;
+        }
+        else if(this.isDeepest() && h+1 == hmax){ //On est dans un noeud et à la hauteur max 
+            int[][] tabFinal = new int[2][2];
+            tabFinal[0][0] = this.getQ1().getValue();
+            tabFinal[0][1] = this.getQ2().getValue();
+            tabFinal[1][1] = this.getQ3().getValue();
+            tabFinal[1][0] = this.getQ4().getValue();
+            return tabFinal;
+        }
+        else{
+            int[][] tabFinal = new int[(int)Math.pow(2,hmax-h)][(int)Math.pow(2,hmax-h)];
+            int[][] tabQ1 = this.getQ1().treeToTab(h+1);
+            int[][] tabQ2 = this.getQ2().treeToTab(h+1);
+            int[][] tabQ3 = this.getQ3().treeToTab(h+1);
+            int[][] tabQ4 = this.getQ4().treeToTab(h+1);
+            // Fusion des tableaux dans tabFinal
+            int halfSize = tabFinal.length / 2;
+            for (int i = 0; i < halfSize; i++) {
+                for (int j = 0; j < halfSize; j++) {
+                    // tabQ1 en haut à gauche
+                    tabFinal[i][j] = tabQ1[i][j];
+                    // tabQ2 en haut à droite
+                    tabFinal[i][j + halfSize] = tabQ2[i][j];
+                    // tabQ3 en bas à droite
+                    tabFinal[i + halfSize][j + halfSize] = tabQ4[i][j];
+                    // tabQ4 en bas à gauche
+                    tabFinal[i + halfSize][j] = tabQ3[i][j];
+                }
+            }
+            return tabFinal;
+        }
+    }
+
+    /*public int[][] treeToTab(int val, int h){
         if(this.isDeepest() && h == hmax){ //On est dans un noeud et à la hauteur max 
             int[][] tabFinal = new int[2][2];
             tabFinal[0][0] = this.getQ1().getValue();
@@ -467,7 +514,7 @@ public class Quadtree {
         }
         int[][] tab = new int[0][0];
         return tab = new int[0][0];
-    }
+    }*/
     /**
     * Transforme un Quadtree en tableau 2D
     * @param h La hauteur actuelle dans le Quadtree
@@ -623,7 +670,7 @@ public class Quadtree {
             writer.newLine();
             int[][] tabTree;
             if(this.areNotNull()){
-                tabTree= this.treeToTab(0,0);
+                tabTree= this.treeToTab(0);
             }
             else{
                 tabTree = new int[1][1];
@@ -789,20 +836,6 @@ public class Quadtree {
     }
 
     /**
-    * Trouve l'indice du Epsilon le plus petit dans notre tableau epsilonComp
-    * @return L'indice trouvé, 0 sinon
-    */
-    public int indiceMinEps(){
-        int minEpsI = 0;
-        for(int i = 0; i<epsilonComp.size(); i++){
-            if(epsilonComp.get(minEpsI) > epsilonComp.get(i)){
-                minEpsI = i;
-            }
-        }
-        return minEpsI;
-    }
-
-    /**
     * Compression Rho d'un Quadtree
     * On appelera nbNoeuds pour trouver le nombre de noeuds a supprimer
     * On appelera compressRhoRecu pour la compression de manière recursive
@@ -822,6 +855,9 @@ public class Quadtree {
             nbASuppr = nbN - noeudsACons;
             this.stockNoeudComp();
             while(nbASuppr>0){
+                if(epsilonComp.size()==1){
+                    this.stockNoeudComp();
+                }
                 this.compressRhoIte();
             }
             if(this.areNotNull()){
