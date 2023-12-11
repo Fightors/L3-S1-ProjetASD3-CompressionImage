@@ -102,10 +102,8 @@ public class Quadtree {
             scanner.nextLine();
             scanner.nextLine();
             int dim = Integer.parseInt(scanner.next());
-            //System.out.println(dim);
             scanner.nextLine();
             int lumMax = Integer.parseInt(scanner.next());
-            //System.out.println(lumMax);
             int[][] tabQ = new int[dim][dim];
             for (int i = 0; i < dim; i++) {
                 for (int j = 0; j < dim; j++) {
@@ -113,8 +111,6 @@ public class Quadtree {
                 }
             }
             hmax = (int) (Math.log(dim) / Math.log(2));
-            //System.out.println(hmax);
-
             this.value = -1;
             this.Q1 = null;
             this.Q2 = null;
