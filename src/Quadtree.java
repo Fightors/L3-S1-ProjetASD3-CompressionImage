@@ -617,6 +617,38 @@ public class Quadtree {
         }
     }
 
+    public Quadtree getParent(Quadtree Q){
+        if(this.areNotNull()){
+            if(this.getQ1() == Q){
+                return this;
+            }
+            else{
+                return this.getQ1().getParent(Q);
+            }
+            if(this.getQ2() == Q){
+                return this;
+            }
+            else{
+                return this.getQ2().getParent(Q);
+            }
+            if(this.getQ3() == Q){
+                return this;
+            }
+            else{
+                return this.getQ3().getParent(Q);
+            }
+            if(this.getQ4() == Q){
+                return this;
+            }
+            else{
+                return this.getQ4().getParent(Q);
+            }
+        }
+        else{
+            return this;
+        }
+    }
+
     /**
     * Compression Rho d'un Quadtree
     * On appelera nbNoeuds pour trouver le nombre de noeuds a supprimer
@@ -637,9 +669,10 @@ public class Quadtree {
             nbASuppr = nbN - noeudsACons;
             this.stockNoeudComp();
             while(nbASuppr>0){
-                if(epsilonComp.size()==1){
+                /*if(epsilonComp.size()==1){
                     this.stockNoeudComp();
-                }
+                }*/
+                System.out.println(nbASuppr);
                 this.compressRhoIte();
             }
             if(this.areNotNull()){
@@ -668,6 +701,7 @@ public class Quadtree {
     public void compressRhoIte(){
         noeudComp.get(0).compressLambda();
         nbASuppr-=4;
+        Quadtree Q = this.getParent(noeudComp.get(0));
         noeudComp.remove(0);
         epsilonComp.remove(0);
     }
