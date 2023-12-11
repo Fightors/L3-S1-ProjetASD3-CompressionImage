@@ -42,14 +42,23 @@ public class Quadtree {
     */
     public Quadtree Q4;
 
+    /**
+    * Variable statique
+    * ArrayList des noeuds compressibles lors de la compression Rho
+    */
     public static ArrayList<Quadtree> noeudComp;
 
+    /**
+    * Variable statique
+    * ArrayList des Epsilons correspondant aux noeuds compressibles lors de la compression Rho
+    */
     public static ArrayList<Double> epsilonComp;
 
     public static int hmax;
 
     /**
-    * Valeur statique utilisee pour la suppression de noeud lors de la compression Rho
+    * Valeur statique 
+    * Utilisee pour la suppression de noeuds lors de la compression Rho
     */
     public static int nbASuppr;
 
@@ -239,15 +248,6 @@ public class Quadtree {
     */
     public int getValue() {
         return this.value;
-    }
-
-    /**
-    * Setter d'un attribut de Quadtree
-    * Valeur du noeud courant devient v
-    * @param v Nouvelle valeur de value
-    */
-    public void setValue(int v) {
-        this.value = v;
     }
 
     /**
