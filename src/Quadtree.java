@@ -610,7 +610,7 @@ public class Quadtree {
     }
 
     public Quadtree getParent(String chemin){
-        if(chemin==""){
+        if(chemin.length()==0){
             return this;
         }
         else{
@@ -640,8 +640,8 @@ public class Quadtree {
     * On appelera verifEqui pour re-equilibrer l'arbre apres la compression 
     * @param p Pourcentage maximum de l'image qui doit subsister apres la compression
     */
-    public void compressRho(int p) {
-        if (p < 0 || p > 100) {
+    public void compressRho(double p) {
+        if (p < 0.0 || p > 100.0) {
             System.out.println("Erreur ! Valeur > 100 ou < 0");
         } 
         else{
@@ -652,8 +652,8 @@ public class Quadtree {
             }
             nbASuppr = nbN - noeudsACons;
             this.stockNoeudComp("");
-            System.out.println(nbASuppr);
-            System.out.println(noeudComp.size());
+            //System.out.println(nbASuppr);
+            //System.out.println(noeudComp.size());
             while(nbASuppr>0){
                 /*if(epsilonComp.size()==1){
                     this.stockNoeudComp();
@@ -685,11 +685,11 @@ public class Quadtree {
     * Compression d'un Quadtree avec la methode Rho
     */
     public void compressRhoIte(){
-        noeudComp.get(0).compressLambda();
-        nbASuppr-=4;
         String cheminReduit;
         cheminReduit = (String)cheminComp.get(0).subSequence(0,cheminComp.get(0).length()-1);
         Quadtree QParent = this.getParent(cheminReduit);
+        noeudComp.get(0).compressLambda();
+        nbASuppr-=4;
         noeudComp.remove(0);
         epsilonComp.remove(0);
         cheminComp.remove(0);
@@ -738,59 +738,172 @@ public class Quadtree {
     */
     public static void main(String[] args) {
         String chemin;
-        int p;
+        double p;
         int nbNoeudInitial;
         if(args.length == 2){
             chemin = args[0];
-            p = Integer.parseInt(args[1]);
+            p = Double.parseDouble(args[1]);
+            Quadtree QLambda = new Quadtree(chemin);
+            Quadtree QRho = new Quadtree(chemin);
+            nbNoeudInitial = QLambda.nbNoeuds();
+            System.out.println("\n=====Arbre initial======");
+            //QLambda.QtoString();
+            System.out.print("\nHauteur : ");
+            System.out.println(QLambda.hauteurMax());
+            System.out.print("Luminosite Max : ");
+            System.out.println(QLambda.lumMax());
+            System.out.print("Nombre de Noeuds : ");
+            System.out.println(nbNoeudInitial);
+            System.out.println("========================");
+
+            QLambda.compressLambda();
+            System.out.println("\n===Compression Lambda===");
+            //QLambda.QtoString();
+            System.out.print("\nHauteur : ");
+            System.out.println(QLambda.hauteurMax());
+            System.out.print("Luminosite Max : ");
+            System.out.println(QLambda.lumMax());
+            System.out.print("Nombre de Noeuds : ");
+            System.out.println(QLambda.nbNoeuds());
+            System.out.print("Taux de compression : ");
+            System.out.print((int)(QLambda.nbNoeuds()*100/nbNoeudInitial));
+            System.out.println("%");
+            QLambda.stringToTxt("treeCompressionLambda");
+            QLambda.toPGM("compressionLambda");
+            System.out.println("========================");
+
+            QRho.compressRho(p);
+            System.out.println("\n====Compression Rho=====");
+            //QRho.QtoString();
+            System.out.print("\nHauteur : ");
+            System.out.println(QRho.hauteurMax());
+            System.out.print("Luminosite Max: ");
+            System.out.println(QRho.lumMax());
+            System.out.print("Nombre de Noeuds : ");
+            System.out.println(QRho.nbNoeuds());
+            System.out.print("Taux de compression : ");
+            System.out.print(p);
+            System.out.println("%");
+            QRho.stringToTxt("treeCompressionRho");
+            QRho.toPGM("compressionRho");
+            System.out.println("========================\n");
         }
         else{
-            chemin = "test.pgm";
-            p = 82;
+            // Chemin du répertoire courant
+            String cheminRepertoire = "."; // Utilisez le chemin complet si nécessaire
+            
+            // Création d'un objet File pour le répertoire courant
+            File repertoire = new File(cheminRepertoire);
+            
+            // Filtrage des fichiers avec l'extension .pgm
+            File[] fichiersPGM = repertoire.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.toLowerCase().endsWith(".pgm");
+                }
+            });
+
+            // Affichage des fichiers avec des numéros devant
+            if (fichiersPGM != null && fichiersPGM.length > 0) {
+                String[] nomsFichiers = new String[fichiersPGM.length];
+                System.out.println("Choisissez parmis la liste d'images PGM dans le repertoire courant celle que vous souhaitez compresser");
+                for (int i = 0; i < fichiersPGM.length; i++) {
+                    nomsFichiers[i] = fichiersPGM[i].getName();
+                    System.out.println((i + 1) + ". " + fichiersPGM[i].getName());
+                }
+                System.out.println("\nEntrez le numero de l'image :");
+                Scanner scanner = new Scanner(System.in);
+                String nbPGM = scanner.nextLine();
+                while(Integer.parseInt(nbPGM) > nomsFichiers.length-1 || Integer.parseInt(nbPGM) < 1){
+                    System.out.println("Numero de fichier PGM incorrect !");
+                    nbPGM = scanner.nextLine();
+                }
+                String nomFichier = nomsFichiers[Integer.parseInt(nbPGM)-1];
+                Quadtree Q = new Quadtree(nomFichier);
+                nbNoeudInitial = Q.nbNoeuds();
+                System.out.println("\n=====Arbre initial======");
+                //QLambda.QtoString();
+                System.out.print("\nHauteur : ");
+                System.out.println(Q.hauteurMax());
+                System.out.print("Luminosite Max : ");
+                System.out.println(Q.lumMax());
+                System.out.print("Nombre de Noeuds : ");
+                System.out.println(nbNoeudInitial);
+                System.out.println("========================\n");
+                int compChoix = -1;
+                while(compChoix!=4){
+                    System.out.println("\nQue souhaitez-vous faire ?");
+                    System.out.println("1. Compression Lambda");
+                    System.out.println("2. Compression Rho");
+                    System.out.println("3. Changer d'image et recommencer");
+                    System.out.println("4. Quitter le programme");
+                    compChoix = Integer.parseInt(scanner.nextLine());
+                    if(compChoix == 1){
+                        nbNoeudInitial=Q.nbNoeuds();
+                        Q.compressLambda();
+                        System.out.println("\n===Compression Lambda===");
+                        //QLambda.QtoString();
+                        System.out.print("\nHauteur : ");
+                        System.out.println(Q.hauteurMax());
+                        System.out.print("Luminosite Max : ");
+                        System.out.println(Q.lumMax());
+                        System.out.print("Nombre de Noeuds : ");
+                        System.out.println(Q.nbNoeuds());
+                        System.out.print("Taux de compression : ");
+                        System.out.print((int)(Q.nbNoeuds()*100/nbNoeudInitial));
+                        System.out.println("%");
+                        Q.stringToTxt("treeCompressionLambda");
+                        Q.toPGM("compressionLambda");
+                        System.out.println("========================");
+                    }
+                    if(compChoix == 2){
+                        System.out.println("\nQuel pourcentage de compression utiliser ?");
+                        p = Double.parseDouble(scanner.nextLine());
+                        Q.compressRho(p);
+                        System.out.println("\n====Compression Rho=====");
+                        //QRho.QtoString();
+                        System.out.print("\nHauteur : ");
+                        System.out.println(Q.hauteurMax());
+                        System.out.print("Luminosite Max: ");
+                        System.out.println(Q.lumMax());
+                        System.out.print("Nombre de Noeuds : ");
+                        System.out.println(Q.nbNoeuds());
+                        System.out.print("Taux de compression : ");
+                        System.out.print(p);
+                        System.out.println("%");
+                        Q.stringToTxt("treeCompressionRho");
+                        Q.toPGM("compressionRho");
+                        System.out.println("========================\n");
+                    }
+                    if(compChoix == 3){
+                        System.out.println("Choisissez parmis la liste d'images PGM dans le repertoire courant celle que vous souhaitez compresser");
+                        for (int i = 0; i < fichiersPGM.length; i++) {
+                            System.out.println((i + 1) + ". " + fichiersPGM[i].getName());
+                        }
+                        System.out.println("\nEntrez le numero de l'image :");
+                        nbPGM = scanner.nextLine();
+                        while(Integer.parseInt(nbPGM) > nomsFichiers.length-1 || Integer.parseInt(nbPGM) < 1){
+                            System.out.println("Numero de fichier PGM incorrect !");
+                            nbPGM = scanner.nextLine();
+                        }
+                        nomFichier = nomsFichiers[Integer.parseInt(nbPGM)-1];
+                        Q = new Quadtree(nomFichier);
+                        nbNoeudInitial = Q.nbNoeuds();
+                        System.out.println("\n=====Arbre initial======");
+                        System.out.print("\nHauteur : ");
+                        System.out.println(Q.hauteurMax());
+                        System.out.print("Luminosite Max : ");
+                        System.out.println(Q.lumMax());
+                        System.out.print("Nombre de Noeuds : ");
+                        System.out.println(nbNoeudInitial);
+                        System.out.println("========================\n");
+                    }
+                }
+                scanner.close();
+            }
+            else {
+                System.out.println("Aucune image PGM trouvée dans le repertoire courant.");
+            }
         }
-        Quadtree QLambda = new Quadtree(chemin);
-        Quadtree QRho = new Quadtree(chemin);
-        nbNoeudInitial = QLambda.nbNoeuds();
-        System.out.println("\n=====Arbre initial======");
-        //QLambda.QtoString();
-        System.out.print("\nHauteur : ");
-        System.out.println(QLambda.hauteurMax());
-        System.out.print("Luminosite Max : ");
-        System.out.println(QLambda.lumMax());
-        System.out.print("Nombre de Noeuds : ");
-        System.out.println(nbNoeudInitial);
-        System.out.println("========================");
-
-        QLambda.compressLambda();
-        System.out.println("\n===Compression Lambda===");
-        //QLambda.QtoString();
-        System.out.print("\nHauteur : ");
-        System.out.println(QLambda.hauteurMax());
-        System.out.print("Luminosite Max : ");
-        System.out.println(QLambda.lumMax());
-        System.out.print("Nombre de Noeuds : ");
-        System.out.println(QLambda.nbNoeuds());
-        System.out.print("Taux de compression : ");
-        System.out.print((int)(QLambda.nbNoeuds()*100/nbNoeudInitial));
-        System.out.println("%");
-        QLambda.stringToTxt("treeCompressionLambda");
-        QLambda.toPGM("compressionLambda");
-        System.out.println("========================");
-
-        QRho.compressRho(p);
-        System.out.println("\n====Compression Rho=====");
-        //QRho.QtoString();
-        System.out.print("\nHauteur : ");
-        System.out.println(QRho.hauteurMax());
-        System.out.print("Luminosite Max: ");
-        System.out.println(QRho.lumMax());
-        System.out.print("Nombre de Noeuds : ");
-        System.out.println(QRho.nbNoeuds());
-        System.out.print("Taux de compression : ");
-        System.out.print(p);
-        System.out.println("%");
-        QRho.stringToTxt("treeCompressionRho");
-        QRho.toPGM("compressionRho");
-        System.out.println("========================\n");
     }
 }
