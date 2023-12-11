@@ -386,7 +386,7 @@ public class Quadtree {
     /**
     * Transforme un Quadtree en tableau 2D
     * @param h La hauteur actuelle dans le Quadtree
-    * @return tabFinal, le tableau représentant le Quadtree
+    * @return tabFinal, le tableau représentant le Q
     */
     public int[][] treeToTab(int h){
         if(this.getValue() != -1 && (hmax >h)){ //On est dans une feuille mais pas a la hauteur max 
