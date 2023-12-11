@@ -54,6 +54,8 @@ public class Quadtree {
     */
     public static ArrayList<Double> epsilonComp;
 
+    public static ArrayList<String> cheminComp; 
+
     public static int hmax;
 
     /**
@@ -120,6 +122,7 @@ public class Quadtree {
             this.verifEqui();
             noeudComp = new ArrayList<Quadtree>();
             epsilonComp = new ArrayList<Double>();
+            cheminComp = new ArrayList<String>();
             scanner.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -344,7 +347,7 @@ public class Quadtree {
             return 1;
         }
         else if(this.isDeepest()){
-            return 4;
+            return 5;
         }
         else{
             int nbNoeuds1 = 0;
@@ -352,28 +355,16 @@ public class Quadtree {
             int nbNoeuds3 = 0;
             int nbNoeuds4 = 0;
             if(this.getQ1().value==-1){
-                nbNoeuds1 = 1+this.getQ1().nbNoeuds();
-            }
-            else{
-                nbNoeuds1 = 1;
+                nbNoeuds1 = this.getQ1().nbNoeuds();
             }
             if(this.getQ2().value==-1){
-                nbNoeuds2 = 1+this.getQ2().nbNoeuds();
-            }
-            else{
-                nbNoeuds2 = 1;
+                nbNoeuds2 = this.getQ2().nbNoeuds();
             }
             if(this.getQ3().value==-1){
-                nbNoeuds3 = 1+this.getQ3().nbNoeuds();
-            }
-            else{
-                nbNoeuds3 = 1;
+                nbNoeuds3 = this.getQ3().nbNoeuds();
             }
             if(this.getQ4().value==-1){
-                nbNoeuds4 = 1+this.getQ4().nbNoeuds();
-            }
-            else{
-                nbNoeuds4 = 1;
+                nbNoeuds4 = this.getQ4().nbNoeuds();
             }
             return 1+nbNoeuds1+nbNoeuds2+nbNoeuds3+nbNoeuds4;
         }
@@ -602,50 +593,43 @@ public class Quadtree {
      * Stocke les epsilons des noeuds compressibles dans epsilonComp
      * Les deux sont stockes aux mêmes indices
      */
-    public void stockNoeudComp(){
+    public void stockNoeudComp(String chemin){
         if(this.areNotNull()){
             if(this.isDeepest()){
                 int indEps = this.insertDicho(epsilonComp, this.epsilon());
                 noeudComp.add(indEps,this);
+                cheminComp.add(indEps, chemin);
             }
             else{
-                this.getQ1().stockNoeudComp();
-                this.getQ2().stockNoeudComp();
-                this.getQ3().stockNoeudComp();
-                this.getQ4().stockNoeudComp();
+                this.getQ1().stockNoeudComp(chemin + "1");
+                this.getQ2().stockNoeudComp(chemin + "2");
+                this.getQ3().stockNoeudComp(chemin + "3");
+                this.getQ4().stockNoeudComp(chemin + "4");
             }
         }
     }
 
-    public Quadtree getParent(Quadtree Q){
-        if(this.areNotNull()){
-            if(this.getQ1() == Q){
-                return this;
-            }
-            else{
-                return this.getQ1().getParent(Q);
-            }
-            if(this.getQ2() == Q){
-                return this;
-            }
-            else{
-                return this.getQ2().getParent(Q);
-            }
-            if(this.getQ3() == Q){
-                return this;
-            }
-            else{
-                return this.getQ3().getParent(Q);
-            }
-            if(this.getQ4() == Q){
-                return this;
-            }
-            else{
-                return this.getQ4().getParent(Q);
-            }
+    public Quadtree getParent(String chemin){
+        if(chemin==""){
+            return this;
         }
         else{
-            return this;
+            if(chemin.charAt(0)=='1'){
+                chemin=(String)chemin.subSequence(1,chemin.length());
+                return this.getQ1().getParent(chemin);
+            }
+            else if(chemin.charAt(0)=='2'){
+                chemin=(String)chemin.subSequence(1,chemin.length());
+                return this.getQ2().getParent(chemin);
+            }
+            else if(chemin.charAt(0)=='3'){
+                chemin=(String)chemin.subSequence(1,chemin.length());
+                return this.getQ3().getParent(chemin);
+            }
+            else{ 
+                chemin=(String)chemin.subSequence(1,chemin.length());
+                return this.getQ4().getParent(chemin);
+            }
         }
     }
 
@@ -667,13 +651,15 @@ public class Quadtree {
                 noeudsACons = noeudsACons - (noeudsACons % 4) + 1;
             }
             nbASuppr = nbN - noeudsACons;
-            this.stockNoeudComp();
+            this.stockNoeudComp("");
+            System.out.println(nbASuppr);
+            System.out.println(noeudComp.size());
             while(nbASuppr>0){
                 /*if(epsilonComp.size()==1){
                     this.stockNoeudComp();
                 }*/
-                System.out.println(nbASuppr);
                 this.compressRhoIte();
+                //System.out.println(nbASuppr);
             }
             if(this.areNotNull()){
                 this.verifEqui();
@@ -701,9 +687,19 @@ public class Quadtree {
     public void compressRhoIte(){
         noeudComp.get(0).compressLambda();
         nbASuppr-=4;
-        Quadtree Q = this.getParent(noeudComp.get(0));
+        String cheminReduit;
+        cheminReduit = (String)cheminComp.get(0).subSequence(0,cheminComp.get(0).length()-1);
+        Quadtree QParent = this.getParent(cheminReduit);
         noeudComp.remove(0);
         epsilonComp.remove(0);
+        cheminComp.remove(0);
+        if (QParent.areNotNull()){
+            if (QParent.isDeepest()){
+                int indEps = this.insertDicho(epsilonComp, QParent.epsilon());
+                noeudComp.add(indEps,QParent);
+                cheminComp.add(indEps,cheminReduit);
+            }
+        }
     }
 
     /**
