@@ -820,7 +820,7 @@ public class Quadtree {
                 System.out.println("\nEntrez le numero de l'image :");
                 Scanner scanner = new Scanner(System.in);
                 String nbPGM = scanner.nextLine();
-                while(Integer.parseInt(nbPGM) > nomsFichiers.length-1 || Integer.parseInt(nbPGM) < 1){
+                while(Integer.parseInt(nbPGM) > nomsFichiers.length || Integer.parseInt(nbPGM) < 1){
                     System.out.println("Numero de fichier PGM incorrect !");
                     nbPGM = scanner.nextLine();
                 }
@@ -888,7 +888,7 @@ public class Quadtree {
                         }
                         System.out.println("\nEntrez le numero de l'image :");
                         nbPGM = scanner.nextLine();
-                        while(Integer.parseInt(nbPGM) > nomsFichiers.length-1 || Integer.parseInt(nbPGM) < 1){
+                        while(Integer.parseInt(nbPGM) > nomsFichiers.length || Integer.parseInt(nbPGM) < 1){
                             System.out.println("Numero de fichier PGM incorrect !");
                             nbPGM = scanner.nextLine();
                         }
