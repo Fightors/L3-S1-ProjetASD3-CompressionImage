@@ -354,18 +354,10 @@ public class Quadtree {
             int nbNoeuds2 = 0;
             int nbNoeuds3 = 0;
             int nbNoeuds4 = 0;
-            if(this.getQ1().value==-1){
-                nbNoeuds1 = this.getQ1().nbNoeuds();
-            }
-            if(this.getQ2().value==-1){
-                nbNoeuds2 = this.getQ2().nbNoeuds();
-            }
-            if(this.getQ3().value==-1){
-                nbNoeuds3 = this.getQ3().nbNoeuds();
-            }
-            if(this.getQ4().value==-1){
-                nbNoeuds4 = this.getQ4().nbNoeuds();
-            }
+            nbNoeuds1 = this.getQ1().nbNoeuds();
+            nbNoeuds2 = this.getQ2().nbNoeuds();
+            nbNoeuds3 = this.getQ3().nbNoeuds();
+            nbNoeuds4 = this.getQ4().nbNoeuds();
             return 1+nbNoeuds1+nbNoeuds2+nbNoeuds3+nbNoeuds4;
         }
     }
@@ -446,8 +438,12 @@ public class Quadtree {
                 tabTree= this.treeToTab(0);
             }
             else{
-                tabTree = new int[1][1];
-                tabTree[0][0] = this.getValue();
+                tabTree = new int[dim][dim];
+                for(int x= 0;x<dim;x++){
+                    for(int y = 0;y<dim;y++){
+                        tabTree[x][y]=this.getValue();
+                    }
+                }
             }
             for(int i= 0;i<tabTree.length;i++){
                 for(int j = 0;j<tabTree.length;j++){
@@ -652,14 +648,16 @@ public class Quadtree {
             }
             nbASuppr = nbN - noeudsACons;
             this.stockNoeudComp("");
-            //System.out.println(nbASuppr);
-            //System.out.println(noeudComp.size());
-            while(nbASuppr>0){
-                /*if(epsilonComp.size()==1){
-                    this.stockNoeudComp();
-                }*/
-                this.compressRhoIte();
-                //System.out.println(nbASuppr);
+            if(noeudsACons > 5){
+                while(nbASuppr>0){
+                    this.compressRhoIte();
+                }
+            }
+            else{
+                while(nbASuppr>4){
+                    this.compressRhoIte();
+                }
+                this.compressLambdaRecu();
             }
             if(this.areNotNull()){
                 this.verifEqui();
