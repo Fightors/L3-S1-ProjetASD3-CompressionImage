@@ -54,8 +54,16 @@ public class Quadtree {
     */
     public static ArrayList<Double> epsilonComp;
 
+    /**
+    * Variable statique
+    * ArrayList des chemins correspondant aux noeuds compressibles lors de la compression Rho
+    */
     public static ArrayList<String> cheminComp; 
 
+    /**
+    * Variable statique
+    * Hauteur maximum de l'arbre initial
+    */
     public static int hmax;
 
     /**
